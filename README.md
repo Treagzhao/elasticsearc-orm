@@ -93,9 +93,11 @@ esInstance.register("testtype",{
 ### 查询
 #### 基本查询
 ```javascript
-	TestType.find({}).run((err,list,orgResult) => {
+TestType.find({
+		'userId':'userId1'
+}).run((err,list,orgResult) => {
 		console.log(list);
-	});
+});
 ```
 查询的返回值有两个，一个是`list`，另一个是`orgResult`，分别对应着提取之后的列表信息，和原始数据。
 
@@ -144,4 +146,62 @@ orgResult:
         ]
     }
 }
+```
+#### 获取数量
+```javascript
+TestType.find({
+	'age':13
+}).count((err,result,org) => {
+	console.log(result);
+});
+```
+#### 匹配查询
+单个字段匹配查询
+```javascript
+TestType.find({}).match("内容","name").run((err,list,org) => {
+	console.log(list);
+});
+```
+多字段匹配查询
+```javascript
+TestType.find({}).match("内容",["name","userId"]).run((err,list,org) => {
+	console.log(list);
+});
+```
+多组内容查询
+```javascript
+TestType.find({}).matchPhrase("内容1 内容2","name").run((err,list,org) => {
+	console.log(list);
+});
+```
+#### 分页
+```javascript
+TestType.find({}).offset(0).size(100).run((err,list,org) => {
+	console.log(list);
+});
+```
+#### 排序
+通过在字段名前加* - *来倒序排列
+```javascript
+TestType.find({}).order("createDate").run((err,list,org) => {
+	console.log(list);
+});
+TestType.find({}).order("-createDate").run((err,list,org) => {
+	console.log(list);
+});
+```
+#### 范围查询
+`between` 方法的第二个参数必须是长度为2的数组
+```javascript
+TestType.find({}).between("age",[1,30]).run((err,list,org) => {
+	console.log(list);
+});
+```
+还可以通过find来进行范围查询
+```javascript
+TestType.find({
+	'age':ESOrm.between(1,30)
+}).run((err,list,org) => {
+	console.log(list);
+});
 ```
