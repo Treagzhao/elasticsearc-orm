@@ -214,5 +214,6 @@ TestType.find({
 	'age':ESOrm.lt(10),
 	'age':ESOrm.or(13)
 }).run((err,list,org) => {
+	console.log(list);
 });
 ```
