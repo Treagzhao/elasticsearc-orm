@@ -86,6 +86,20 @@ function EsEntity(opts, entityName, indexConfig, descriptions) {
     };
 
 
+    this.delete = (id, callback) => {
+        request({
+            'uri': BASE_PATH + "/" + indexConfig.index + "/" + indexConfig.type + "/" + id,
+            'method': 'DELETE'
+        }, (err, response, body) => {
+            if (err) {
+                callback(err);
+                return;
+            }
+            let result = JSON.parse(body);
+            callback(null, result);
+        });
+    };
+
     let init = () => {
         if (!descriptions) {
             return;
