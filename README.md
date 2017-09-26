@@ -18,7 +18,7 @@ node 6.0.0+
 3. 对数据进行增删改查
 
 ## 使用文档
-#### 注册索引和类型
+### 注册索引和类型
 通过`register`方法，可以注册一个跟索引和类型绑定的Entity实例
 ```javascript
 var TestType =	esInstance.regster("testtype",{
@@ -35,7 +35,7 @@ var TestType = esInstance.register("testtype",{
 	"name":{"type":"string"},
 	"age":{"type":"long"},
 	"birthday":{"type":"date"},
-	"id":{"type":"string","index":"not_analyzed"}
+	"userId":{"type":"string","index":"not_analyzed"}
 });
 ```
 当传入了索引的映射类型后，orm会自动检测index和type有没有建立，如果没有建立，就会自动按照指定的配置创建映射。如果没有传入映射关系，orm就不会执行自动创建。
@@ -47,28 +47,28 @@ esInstance.register("testtype",{
 	"name":{"type":"string"},
 	"age":{"type":"long"},
 	"birthday":{"type":"date"},
-	"id":{"type":"string","index":"not_analyzed"}
+	"userId":{"type":"string","index":"not_analyzed"}
 }).ready(() => {
 	console.log('ready');
 });
 ```
-#### 获取Entity实例
+### 获取Entity实例
 除了通过`register`的方法返回值获取Entity实例，也可以在orm的`entities`里面通过key来获取实例。
 ```javascript
 	var TestType = esInstance.entities['testtype'];
 ```
-#### 插入一条文档
+### 插入一条文档
 ```javascript
 	TestType.create({
 		'name':"Treagzhao",
 		"age":18,
-		'id':'xsdf9012xf',
+		'userId':'xsdf9012xf',
 		'birtyDate':new Date()
 	},(err,result,orgResult) => {
 		console.log('插入成功');
 	});
 ```
-#### 更新一条文档
+### 更新一条文档
 ```javascript
 	TestType.update(id,{
 		'name':"New Name":
@@ -78,15 +78,70 @@ esInstance.register("testtype",{
 		console.log("更新成功");
 	});
 ```
-#### 删除一条文档
+### 删除一条文档
 ```javascript
 	TestType.delete(id,(err,result,orgResult) => {
 		console.log("更新成功");
 	});
 ```
-#### 获取一条文档
+### 获取一条文档
 ```javascript
 	TestType.get(id,(err,result,orgResult)=>{
 		console.log(result);
 	});
+```
+### 查询
+基本查询
+```javascript
+	TestType.find({}).run((err,list,orgResult) => {
+		console.log(list);
+	});
+```
+查询的返回值有两个，一个是`list`，另一个是`orgResult`，分别对应着提取之后的列表信息，和原始数据。
+
+list:
+```json
+	[
+    {
+        "name": "Treagzhao",
+        "age": 18,
+        "userId": "e9jud46niso",
+        "createDate": "2017-09-26T08:28:32.441Z",
+		"id":"AV69TUk8gw-LyrZU-U1H"
+    }
+]
+```
+
+orgResult:
+```json
+{
+    "took": 2,
+    "timed_out": false,
+    "_shards": {
+        "total": 5,
+        "successful": 5,
+        "failed": 0
+    },
+    "hits": {
+        "total": 1,
+        "max_score": null,
+        "hits": [
+            {
+                "_index": "testindex",
+                "_type": "testtype",
+                "_id": "AV69TUk8gw-LyrZU-U1H",
+                "_score": null,
+                "_source": {
+                    "name": "Treagzhao",
+        			"age": 18,
+        			"userId": "e9jud46niso",
+        			"createDate": "2017-09-26T08:28:32.441Z"
+                },
+                "sort": [
+                    1506414512441
+                ]
+            }
+        ]
+    }
+}
 ```
