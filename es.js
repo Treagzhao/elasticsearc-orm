@@ -34,25 +34,17 @@ function ElasticSearch(opts) {
     };
 
 
-    this.between = (from, to) => {
-        return new QueryType.Between(from, to);
-    };
 
-    this.or = (value) => {
-        return new QueryType.Or(value);
-    };
-
-    // this.distinctType = (key, type, cbk) => {
-    //     let path = entities[key];
-    //     new ESQuery(opts, path, {}).column(type).run().then((value) => {
-    //         cbk && cbk(null, value);
-    //     }, (e) => {
-    //         cbk && cbk(e);
-    //     });
-    // };
 
     this.entities = entities;
 };
+ElasticSearch.between = (from, to) => {
+    return new QueryType.Between(from, to);
+};
 
+ElasticSearch.or = (value) => {
+    let intance = new QueryType.Or(value);
+    return intance;
+};
 
 module.exports = ElasticSearch;
