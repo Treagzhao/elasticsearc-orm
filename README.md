@@ -205,3 +205,14 @@ TestType.find({
 	console.log(list);
 });
 ```
+
+### Find查询语句
+```javascript
+TestType.find({
+	"age":ESOrm.between(1,30),
+	'age':ESOrm.gt(1),
+	'age':ESOrm.lt(10),
+	'age':ESOrm.or(13)
+}).run((err,list,org) => {
+});
+```
