@@ -1,0 +1,29 @@
+{
+  "name": "elasticseach-orm",
+  "version": "0.0.1",
+  "description": "This is a orm for elasticSearch",
+  "main": "es.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Treagzhao/elasticsearc-orm.git"
+  },
+  "keywords": [
+    "es",
+    "elasticSearch",
+    "orm"
+  ],
+  "author": "Treagzhao",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Treagzhao/elasticsearc-orm/issues"
+  },
+  "homepage": "https://github.com/Treagzhao/elasticsearc-orm#readme",
+  "dependencies": {
+    "co": "^4.6.0",
+    "request": "^2.82.0",
+    "thunkify": "^2.1.2"
+  }
+}
