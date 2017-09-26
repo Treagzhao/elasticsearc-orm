@@ -91,7 +91,7 @@ esInstance.register("testtype",{
 	});
 ```
 ### 查询
-基本查询
+#### 基本查询
 ```javascript
 	TestType.find({}).run((err,list,orgResult) => {
 		console.log(list);
@@ -101,7 +101,7 @@ esInstance.register("testtype",{
 
 list:
 ```json
-	[
+[
     {
         "name": "Treagzhao",
         "age": 18,
