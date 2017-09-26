@@ -19,7 +19,7 @@ node 6.0.0+
 
 ## 使用文档
 #### 注册索引和类型
-通过*register*方法，可以
+通过`register`方法，可以注册一个跟索引和类型绑定的Entity实例
 ```javascript
 var TestType =	esInstance.regster("testtype",{
 	"index":"yourindex",
@@ -40,7 +40,7 @@ var TestType = esInstance.register("testtype",{
 ```
 当传入了索引的映射类型后，orm会自动检测index和type有没有建立，如果没有建立，就会自动按照指定的配置创建映射。如果没有传入映射关系，orm就不会执行自动创建。
 ```javascript
-	esInstance.register("testtype",{
+esInstance.register("testtype",{
 	"index":"yourindex",
 	"type":"yourtype"
 },{
@@ -51,4 +51,42 @@ var TestType = esInstance.register("testtype",{
 }).ready(() => {
 	console.log('ready');
 });
+```
+#### 获取Entity实例
+除了通过`register`的方法返回值获取Entity实例，也可以在orm的`entities`里面通过key来获取实例。
+```javascript
+	var TestType = esInstance.entities['testtype'];
+```
+#### 插入一条文档
+```javascript
+	TestType.create({
+		'name':"Treagzhao",
+		"age":18,
+		'id':'xsdf9012xf',
+		'birtyDate':new Date()
+	},(err,result,orgResult) => {
+		console.log('插入成功');
+	});
+```
+#### 更新一条文档
+```javascript
+	TestType.update(id,{
+		'name':"New Name":
+		"age":100,
+		"birthday":new Date()
+	},(err,result,orgResult) => {
+		console.log("更新成功");
+	});
+```
+#### 删除一条文档
+```javascript
+	TestType.delete(id,(err,result,orgResult) => {
+		console.log("更新成功");
+	});
+```
+#### 获取一条文档
+```javascript
+	TestType.get(id,(err,result,orgResult)=>{
+		console.log(result);
+	});
 ```
