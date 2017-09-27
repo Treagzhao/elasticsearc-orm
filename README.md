@@ -197,6 +197,16 @@ TestType.find({}).between("age",[1,30]).run((err,list,org) => {
 	console.log(list);
 });
 ```
+```javascript
+TestType.find({}).gt(1,"age",true).run((err,list,org) => {
+	console.log(list);
+});
+```
+```javascript
+TestType.find({}).lt(100,"age").run((err,list,org) => {
+	console.log(list);
+});
+```
 还可以通过find来进行范围查询
 ```javascript
 TestType.find({
@@ -209,11 +219,13 @@ TestType.find({
 ### Find查询语句
 ```javascript
 TestType.find({
-	"age":ESOrm.between(1,30),
-	'age':ESOrm.gt(1),
-	'age':ESOrm.lt(10),
+	"age":ESOrm.between(1,30),  //ESOrm.between(1,30,true,true) 可以查询闭区间
+	'age':ESOrm.gt(1),  //ESOrm.gt(1,true) 可以查询闭区间
+	'age':ESOrm.lt(10),  //ESOrm.lt(1,true) 可以查询闭区间
 	'age':ESOrm.or(13)
 }).run((err,list,org) => {
 	console.log(list);
 });
 ```
+## 关于作者
+作者：Treagzhao      这是我第一次在npm发布模块，敬请各位指教 
