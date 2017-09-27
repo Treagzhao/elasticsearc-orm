@@ -83,6 +83,7 @@ function EsEntity(opts, entityName, indexConfig, descriptions) {
     this.ready = (callback, error) => {
         readyCallback = callback;
         readyErrorCallback = error;
+        return this;
     };
 
 
@@ -90,6 +91,7 @@ function EsEntity(opts, entityName, indexConfig, descriptions) {
         request({
             'uri': BASE_PATH + "/" + indexConfig.index + "/" + indexConfig.type + "/" + id,
             'method': 'DELETE'
+
         }, (err, response, body) => {
             if (err) {
                 callback(err);

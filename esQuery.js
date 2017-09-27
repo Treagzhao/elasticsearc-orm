@@ -26,7 +26,8 @@ function Query(opt, path, params, descriptions = {}, config) {
     let initParams = () => {
         let bodyInfo = {};
         let innerMustList = [],
-            innerShouldList = [];
+            innerShouldList = [],
+            innerRangeQuery = null;
         Object.keys(params).forEach((key, index) => {
             let value = params[key];
             if (!body.query) {
@@ -34,26 +35,29 @@ function Query(opt, path, params, descriptions = {}, config) {
                     "bool": {}
                 };
             }
+            if (value instanceof QueryType.BaseType) {
+                let para = value.valueOf(key, descriptions);
+                if (value instanceof QueryType.Or) {
+                    innerShouldList.push(para);
+                } else {
+                    if (!innerRangeQuery) {
+                        innerRangeQuery = {
+                            "range": {}
+                        };
+                    }
+                    innerRangeQuery.range[key] = para;
+                }
+            }
             // if (value instanceof QueryType.Or) {
-            //     if (!body.query, query_string) {
-            //         body.query.query_string = {};
-            //     }
-            //     queryString += value.toString();
-            // } else if (index > 0) {
-            //     if (!body.query.query_string) {
-            //         body.query.query_string = {};
-            //     }
-            //     queryString += " AND ";
-            // }
-            if (value instanceof QueryType.Or) {
-                innerShouldList.push(value.valueOf(key, descriptions));
-            } else if (value instanceof QueryType.Between) {
-                let range = {
-                    "range": {}
-                };
-                range.range[key] = value.valueOf();
-                innerMustList.push(range);
-            } else {
+            //     innerShouldList.push(value.valueOf(key, descriptions));
+            // } else if (value instanceof QueryType.Between) {
+            //     let range = {
+            //         "range": {}
+            //     };
+            //     range.range[key] = value.valueOf();
+            //     innerMustList.push(range);
+            // } else
+            else {
                 //精确匹配
                 let dataType = getColumnType(key);
                 if (dataType) {
@@ -65,6 +69,9 @@ function Query(opt, path, params, descriptions = {}, config) {
                 }
             }
         });
+        if (innerRangeQuery) {
+            innerMustList.push(innerRangeQuery);
+        }
         if (mustList.length > 0 || innerMustList.length > 0) {
             if (!body.query) {
                 body.query = {};
@@ -110,6 +117,7 @@ function Query(opt, path, params, descriptions = {}, config) {
                 body = {};
             }
         }
+        console.log(JSON.stringify(body));
         request({
             'method': 'POST',
             'uri': url,

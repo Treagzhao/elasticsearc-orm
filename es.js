@@ -38,13 +38,20 @@ function ElasticSearch(opts) {
 
     this.entities = entities;
 };
-ElasticSearch.between = (from, to) => {
-    return new QueryType.Between(from, to);
+ElasticSearch.between = (from, to, equalFrom, equalTo) => {
+    return new QueryType.Between(from, to, equalFrom, equalTo);
 };
 
 ElasticSearch.or = (value) => {
     let intance = new QueryType.Or(value);
     return intance;
 };
-
+ElasticSearch.gt = (value, equal) => {
+    let intance = new QueryType.Gt(value, equal);
+    return intance;
+};
+ElasticSearch.lt = (value, equal) => {
+    let intance = new QueryType.Lt(value, equal);
+    return intance;
+};
 module.exports = ElasticSearch;
