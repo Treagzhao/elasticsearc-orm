@@ -107,7 +107,6 @@ function Query(opt, path, params, descriptions = {}, config) {
                 body = {};
             }
         }
-        console.log(JSON.stringify(body));
         request({
             'method': 'POST',
             'uri': url,
