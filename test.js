@@ -14,8 +14,6 @@ let TestType = instance.register("testindex", {
     "cid": { "type": "string" }
 }).ready(() => {});
 
-TestType.find({
-    'age': ESOrm.lt(10,true)
-}).run((err, list, org) => {
+TestType.find({}).lt(13, 'age',true).run((err, list, org) => {
     console.log(list);
 });

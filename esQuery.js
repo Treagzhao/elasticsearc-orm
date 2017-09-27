@@ -47,17 +47,7 @@ function Query(opt, path, params, descriptions = {}, config) {
                     }
                     innerRangeQuery.range[key] = para;
                 }
-            }
-            // if (value instanceof QueryType.Or) {
-            //     innerShouldList.push(value.valueOf(key, descriptions));
-            // } else if (value instanceof QueryType.Between) {
-            //     let range = {
-            //         "range": {}
-            //     };
-            //     range.range[key] = value.valueOf();
-            //     innerMustList.push(range);
-            // } else
-            else {
+            } else {
                 //精确匹配
                 let dataType = getColumnType(key);
                 if (dataType) {
@@ -166,6 +156,14 @@ function Query(opt, path, params, descriptions = {}, config) {
     };
 
 
+    this.gt = (value, name, equal, type) => {
+        params[name] = new QueryType.Gt(value, equal);
+        return this;
+    };
+    this.lt = (value, name, equal, type) => {
+        params[name] = new QueryType.Lt(value, equal);
+        return this;
+    };
 
     this.order = (order) => {
         let orderType = "asc";
