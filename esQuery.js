@@ -261,7 +261,6 @@ function Query(opt, path, params, descriptions = {}, config) {
             match.multi_match.query = query;
             match.multi_match.fields = columns;
         }
-        console.log(queryType, BOOL_TYPE)
         if (!queryType) {
             mustList.push(match);
         } else if (queryType === BOOL_TYPE.TYPE_OR) {
