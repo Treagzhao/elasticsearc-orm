@@ -1,5 +1,7 @@
 var request = require("request");
 let QueryType = require("./queryType.js");
+let globalConfig = require("./config.js");
+let logger = globalConfig.logger;
 
 function Query(opt, path, params, descriptions = {}, config) {
     let domain = opt.domain;
@@ -9,7 +11,8 @@ function Query(opt, path, params, descriptions = {}, config) {
         columnParams = [],
         mustList = [],
         shouldList = [];
-    let queryString = "";
+    let queryString = "",
+        scrollTag = false;
 
     let getColumnType = (column) => {
         if (descriptions[column]) {
@@ -82,11 +85,23 @@ function Query(opt, path, params, descriptions = {}, config) {
         }
         if (typeof from === 'number') {
             body.from = from;
-        } else if (typeof from == "string") {
-            // body.scroll_id = from;
         }
     }
 
+    this.scroll = (scrollId) => {
+        if (scrollId === undefined) {
+            scrollTag = true;
+        } else {
+            body.scroll_id = scrollId;
+            body.scroll = globalConfig.scroll;
+        }
+        return this;
+    };
+
+    this.source = (source) => {
+        body._source = source;
+        return this;
+    };
 
     this.matchPhrase = (value, column) => {
         let query = {};
@@ -100,12 +115,20 @@ function Query(opt, path, params, descriptions = {}, config) {
     this.run = (cbk) => {
         initParams();
         let url = "http://" + domain + ":" + port + path + "/_search";
+        if (scrollTag) {
+            url += "?scroll=" + globalConfig.scroll;
+        }
+        if (body.scroll_id) {
+            let scrollId = body.scroll_id;
+            url = "http://" + domain + ":" + port + "/_search/scroll";
+            body = {
+                'scroll_id': scrollId,
+                'scroll': globalConfig.scroll
+            };
+        }
         let chunk = [];
-        if (from !== undefined) {
-            if (typeof from == 'number') {} else if (typeof from == 'string') {
-                url = "http://" + domain + ":" + port + '/_search/scroll?scroll_id=' + from + "&scroll=" + config.scroll;
-                body = {};
-            }
+        if (globalConfig.debug) {
+            console.log(JSON.stringify(body));
         }
         request({
             'method': 'POST',

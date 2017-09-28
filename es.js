@@ -7,8 +7,9 @@ let request = require("request");
 let ESQuery = require("./esQuery.js");
 let QueryType = require("./queryType.js");
 let ESEntity = require("./esEntity.js");
+let globalConfig = require("./config.js");
 
-function ElasticSearch(opts) {
+function ElasticSearch(opts, config) {
     let entities = {};
     let domain = opts.domain;
     let port = opts.port;
@@ -33,9 +34,16 @@ function ElasticSearch(opts) {
         return entity;
     };
 
+    let init = () => {
+        if (config) {
+            Object.keys(config).forEach((key) => {
+                globalConfig[key] = config[key];
+            });
+        }
+    };
 
 
-
+    init();
     this.entities = entities;
 };
 ElasticSearch.between = (from, to, equalFrom, equalTo) => {
