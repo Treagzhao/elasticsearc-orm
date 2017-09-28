@@ -1,10 +1,14 @@
 var util = require("util");
-var BaseType = function() {
 
+function BaseType() {};
+const BOOL_TYPE = require("./boolType.json");
+BaseType.prototype.getType = function() {
+    return this.queryType;
 };
-var Between = function(from, to, equalFrom, equalTo) {
+var Between = function(from, to, equalFrom, equalTo, queryType) {
     this.from = from;
     this.to = to;
+    this.queryType = queryType;
     this.toString = (key) => {
         return " " + key + ":" + "[" + from + " TO " + to + "]";
     };
@@ -26,14 +30,13 @@ var Between = function(from, to, equalFrom, equalTo) {
 };
 
 var Or = function(value) {
+    this.getType = () => {
+        return BOOL_TYPE.TYPE_OR;
+    };
     this.toString = (key) => {
         return " OR " + key + ":" + name + " ";
     };
-    this.valueOf = (key, descriptions) => {
-        let column = descriptions[key];
-        if (!column) {
-            throw new Error("column in not declared");
-        }
+    this.valueOf = (key) => {
         let obj = {};
         obj[key] = value;
         return {
@@ -42,7 +45,8 @@ var Or = function(value) {
     }
 };
 
-var Gt = function(value, equal) {
+var Gt = function(value, equal, queryType) {
+    this.queryType = queryType;
     this.valueOf = (key, descriptions) => {
         let column = descriptions[key];
         if (!column) {
@@ -54,7 +58,8 @@ var Gt = function(value, equal) {
         return obj;
     };
 };
-var Lt = function(value, equal) {
+var Lt = function(value, equal, queryType) {
+    this.queryType = queryType;
     this.valueOf = (key, descriptions) => {
         let column = descriptions[key];
         if (!column) {

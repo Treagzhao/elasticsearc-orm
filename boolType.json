@@ -1,0 +1,5 @@
+{
+    "TYPE_MUST": 0,
+    "TYPE_OR": 1,
+    "TYPE_NOT": 2
+}

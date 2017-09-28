@@ -2,6 +2,8 @@ var request = require("request");
 let QueryType = require("./queryType.js");
 let globalConfig = require("./config.js");
 let logger = globalConfig.logger;
+const BOOL_TYPE = require("./boolType.json");
+let QueryAnalyzer = require("./queryTypeParamsAnalysiz.js");
 
 function Query(opt, path, params, descriptions = {}, config) {
     let domain = opt.domain;
@@ -10,7 +12,8 @@ function Query(opt, path, params, descriptions = {}, config) {
     let body = {},
         columnParams = [],
         mustList = [],
-        shouldList = [];
+        shouldList = [],
+        notList = [];
     let queryString = "",
         scrollTag = false;
 
@@ -28,9 +31,10 @@ function Query(opt, path, params, descriptions = {}, config) {
 
     let initParams = () => {
         let bodyInfo = {};
-        let innerMustList = [],
-            innerShouldList = [],
-            innerRangeQuery = null;
+        let analyzResult = QueryAnalyzer(params);
+        let innerMustList = analyzResult.must,
+            innerShouldList = analyzResult.should,
+            innerNotList = analyzResult.not;
         Object.keys(params).forEach((key, index) => {
             let value = params[key];
             if (!body.query) {
@@ -38,19 +42,20 @@ function Query(opt, path, params, descriptions = {}, config) {
                     "bool": {}
                 };
             }
-            if (value instanceof QueryType.BaseType) {
-                let para = value.valueOf(key, descriptions);
-                if (value instanceof QueryType.Or) {
-                    innerShouldList.push(para);
-                } else {
-                    if (!innerRangeQuery) {
-                        innerRangeQuery = {
-                            "range": {}
-                        };
-                    }
-                    innerRangeQuery.range[key] = para;
-                }
-            } else {
+            // if (value instanceof QueryType.BaseType) {
+            //     let para = value.valueOf(key, descriptions);
+            //     if (value instanceof QueryType.Or) {
+            //         innerShouldList.push(para);
+            //     } else {
+            //         if (!innerRangeQuery) {
+            //             innerRangeQuery = {
+            //                 "range": {}
+            //             };
+            //         }
+            //         innerRangeQuery.range[key] = para;
+            //     }
+            // } else
+            if (!(value instanceof QueryType.BaseType)) {
                 //精确匹配
                 let dataType = getColumnType(key);
                 if (dataType) {
@@ -62,9 +67,6 @@ function Query(opt, path, params, descriptions = {}, config) {
                 }
             }
         });
-        if (innerRangeQuery) {
-            innerMustList.push(innerRangeQuery);
-        }
         if (mustList.length > 0 || innerMustList.length > 0) {
             if (!body.query) {
                 body.query = {};
@@ -82,6 +84,15 @@ function Query(opt, path, params, descriptions = {}, config) {
                 body.query.bool = {};
             }
             body.query.bool.should = shouldList.concat(innerShouldList);
+        }
+        if (notList.length > 0) {
+            if (!body.query) {
+                body.query = {};
+            }
+            if (!body.query.bool) {
+                body.query.bool = {};
+            }
+            body.query.bool.must_not = notList.concat([]);
         }
         if (typeof from === 'number') {
             body.from = from;
@@ -103,12 +114,22 @@ function Query(opt, path, params, descriptions = {}, config) {
         return this;
     };
 
-    this.matchPhrase = (value, column) => {
+    this.matchPhrase = (value, column, queryType) => {
         let query = {};
         query[column] = value
-        mustList.push({
-            'match_phrase': query
-        });
+        if (!queryType) {
+            mustList.push({
+                'match_phrase': query
+            });
+        } else if (queryType === BOOL_TYPE.TYPE_OR) {
+            shouldList.push({
+                'match_phrase': query
+            })
+        } else if (queryType === BOOL_TYPE.TYPE_NOT) {
+            notList.push({
+                'match_phrase': query
+            });
+        }
         return this;
     };
 
@@ -204,12 +225,12 @@ function Query(opt, path, params, descriptions = {}, config) {
         return this;
     };
 
-    this.between = (key, arr) => {
+    this.between = (key, arr, equalFrom, equalTo, queryType = 0) => {
         if (arr.length != 2) {
             throw new Error("between params is invalid")
             return this;
         }
-        params[key] = new QueryType.Between(arr[0], arr[1]);
+        params[key] = new QueryType.Between(arr[0], arr[1], equalFrom, equalTo, queryType);
         return this;
     };
 
@@ -219,27 +240,34 @@ function Query(opt, path, params, descriptions = {}, config) {
     };
 
 
-    this.match = (query, column) => {
+    this.match = (query, column, queryType) => {
         if (!body.query) {
             body.query = {
                 "bool": {}
             };
         }
+        let match;
         if (typeof column === 'string') {
-            let match = {
+            match = {
                 "match": {}
             }
             match.match[column] = query;
-            mustList.push(match);
         } else if (Object.prototype.toString.call(column).indexOf("Array") >= 0) {
             let columns = column;
-            let match = {
+            match = {
                 "multi_match": {}
 
             }
             match.multi_match.query = query;
             match.multi_match.fields = columns;
+        }
+        console.log(queryType, BOOL_TYPE)
+        if (!queryType) {
             mustList.push(match);
+        } else if (queryType === BOOL_TYPE.TYPE_OR) {
+            shouldList.push(match)
+        } else if (queryType === BOOL_TYPE.TYPE_NOT) {
+            notList.push(match);
         }
         return this;
     };

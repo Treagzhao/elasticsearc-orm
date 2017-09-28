@@ -16,6 +16,9 @@ let TestType = instance.register("testindex", {
     "cid": { "type": "string" }
 }).ready(() => {});
 
-TestType.find({}).source(['age', 'name']).order("age").size(2).scroll().run((err, list, org) => {
-
+TestType.find({
+    'cid': ESOrm.or("test"),
+    'createDate': ESOrm.or(new Date())
+}).match("8o3a45kn9", "name", ESOrm.TYPE_OR).between("age", [15, 30], false, false, ESOrm.TYPE_OR).run((err, list, org) => {
+    console.log(err,list);
 });
