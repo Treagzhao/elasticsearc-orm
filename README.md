@@ -288,6 +288,7 @@ TestType.find({}).scroll(scrollId).run((err, list, org) => {
 | ------------ | ------------ | ------------ | ------------ |
 | scroll  | 1m  | String  |滚动游标的默认缓存时间   |
 | debug  | false  |  Boolean | 开启debug后，每次请求都会输出请求body |
+| primaryKey  | __id  |  String | 默认主键的列名 |
 
 配置项
 ```javascript
