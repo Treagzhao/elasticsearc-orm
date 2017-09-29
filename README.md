@@ -190,10 +190,22 @@ TestType.find({}).order("-createDate").run((err,list,org) => {
 	console.log(list);
 });
 ```
+#### 指定返回字段
+```javascript
+TestType.find({}).source(['age','name']).run((err,list) => {
+	console.log(list);
+});
+```
+这个 list 返回值只包括age和name两个字段
+
 #### 范围查询
 `between` 方法的第二个参数必须是长度为2的数组
 ```javascript
 TestType.find({}).between("age",[1,30]).run((err,list,org) => {
+	console.log(list);
+});
+// 第3、4个参数可以决定开闭区间，true为闭区间，false为开区间
+TestType.find({}).between("age",[1,30],true,false).run((err,list,org) => {
 	console.log(list);
 });
 ```
@@ -207,6 +219,27 @@ TestType.find({}).lt(100,"age").run((err,list,org) => {
 	console.log(list);
 });
 ```
+
+如果想要改变这个参数的查询逻辑，可以传入逻辑参数
+```javascript
+TestType.find({}).between("age",[1,30],true,true,ESOrm.TYPE_OR).run((err,list) =>{
+	console.log(list);
+	//这个查询条件会加入到 should 中
+});
+
+TestType.find({}).bewteen("age",[1,30],true,true,ESOrm.TYPE_NOT).run((err,list) => {
+	console.log(list);
+	//这个查询调价会加入到 not 中 
+});
+
+TestType.find({}).gt(1,"age",true,ESOrm.TYPE_OR).run((err,list,org) => {
+	console.log(list);
+});
+TestType.find({}).lt(1,"age",true,ESOrm.TYPE_NOT).run((err,list,org) => {
+	console.log(list);
+});
+```
+
 还可以通过find来进行范围查询
 ```javascript
 TestType.find({
