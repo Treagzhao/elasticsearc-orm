@@ -17,8 +17,6 @@ let TestType = instance.register("testindex", {
     "cid": { "type": "string" }
 }).ready(() => {});
 
-TestType.find({
-    'age': ESOrm.not(30)
-}).run((err, list) => {
+TestType.find({}).match("tvuqjlmvdr8", "name", ESOrm.TYPE_OR).between("age", [1, 15], false, false, ESOrm.TYPE_OR).run((err, list) => {
     console.log(list);
 })
