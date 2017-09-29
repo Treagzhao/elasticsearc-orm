@@ -85,14 +85,14 @@ function Query(opt, path, params, descriptions = {}, config) {
             }
             body.query.bool.should = shouldList.concat(innerShouldList);
         }
-        if (notList.length > 0) {
+        if (notList.length > 0 || innerNotList.length > 0) {
             if (!body.query) {
                 body.query = {};
             }
             if (!body.query.bool) {
                 body.query.bool = {};
             }
-            body.query.bool.must_not = notList.concat([]);
+            body.query.bool.must_not = notList.concat(innerNotList);
         }
         if (typeof from === 'number') {
             body.from = from;

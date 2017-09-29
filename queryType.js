@@ -45,6 +45,19 @@ var Or = function(value) {
     }
 };
 
+
+var Not = function(value, queryType) {
+    this.queryType = BOOL_TYPE.TYPE_NOT;
+    this.valueOf = (key) => {
+        let obj = {};
+        obj[key] = value;
+        return {
+            'term': obj
+        }
+    };
+};
+
+
 var Gt = function(value, equal, queryType) {
     this.queryType = queryType;
     this.valueOf = (key, descriptions) => {
@@ -71,6 +84,8 @@ var Lt = function(value, equal, queryType) {
         return obj;
     };
 };
+
+util.inherits(Not, BaseType);
 util.inherits(Gt, BaseType);
 util.inherits(Or, BaseType)
 util.inherits(Between, BaseType)
@@ -78,5 +93,6 @@ util.inherits(Lt, BaseType);
 module.exports.BaseType = BaseType;
 module.exports.Lt = Lt;
 module.exports.Or = Or;
+module.exports.Not = Not;
 module.exports.Between = Between;
 module.exports.Gt = Gt;

@@ -54,6 +54,11 @@ ElasticSearch.between = (from, to, equalFrom, equalTo) => {
     return new QueryType.Between(from, to, equalFrom, equalTo);
 };
 
+
+ElasticSearch.not = (value) => {
+    return new QueryType.Not(value);
+};
+
 ElasticSearch.or = (value) => {
     let intance = new QueryType.Or(value);
     return intance;

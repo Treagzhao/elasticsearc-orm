@@ -8,6 +8,8 @@ function Analyzer(queryType) {
     this.addParam = (key, param) => {
         if (param instanceof QueryType.Or) {
             list.push(param.valueOf(key));
+        } else if (param instanceof QueryType.Not) {
+            list.push(param.valueOf(key));
         } else {
             if (!range) {
                 range = {
