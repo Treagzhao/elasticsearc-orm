@@ -149,7 +149,7 @@ function Query(opt, path, params, descriptions = {}, config) {
         }
         let chunk = [];
         if (globalConfig.debug) {
-            console.log(JSON.stringify(body));
+            logger(JSON.stringify(body));
         }
         request({
             'method': 'POST',
@@ -179,7 +179,7 @@ function Query(opt, path, params, descriptions = {}, config) {
                 return;
             }
             result.hits.hits.forEach((item) => {
-                item._source.id = item._id;
+                item._source[globalConfig.primaryKey] = item._id;
                 list.push(item._source);
             });
             if (cbk) {

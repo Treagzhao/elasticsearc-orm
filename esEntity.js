@@ -2,6 +2,9 @@ let ESQuery = require("./esQuery.js");
 let request = require("request");
 let co = require("co");
 let thunkify = require("thunkify");
+let globalConfig = require("./config.js");
+let logger = globalConfig.logger;
+
 
 function EsEntity(opts, entityName, indexConfig, descriptions) {
     let entityPath = "/" + indexConfig.index + (!!indexConfig.type ? "/" + indexConfig.type : "");
@@ -10,11 +13,6 @@ function EsEntity(opts, entityName, indexConfig, descriptions) {
         'scroll': '1m'
     };
     let readyCallback, readyErrorCallback;
-
-
-    this.set = (key, value) => {
-        config[key] = value;
-    };
 
     this.count = (cbk) => {
         new ESQuery(opts, entityPath, {}, descriptions, config).count().then((value) => {
@@ -30,6 +28,9 @@ function EsEntity(opts, entityName, indexConfig, descriptions) {
 
 
     this.get = (id, callback) => {
+        if (globalConfig.debug) {
+            logger("GET:" + BASE_PATH + '/' + indexConfig.index + "/" + indexConfig.type + "/" + id);
+        }
         request({
             'uri': BASE_PATH + '/' + indexConfig.index + "/" + indexConfig.type + "/" + id,
             'method': 'get'
@@ -49,6 +50,10 @@ function EsEntity(opts, entityName, indexConfig, descriptions) {
     };
 
     this.create = (data, callback) => {
+        if (globalConfig.debug) {
+            logger("CREATE:" +
+                JSON.stringify(data));
+        }
         request({
             'uri': BASE_PATH + "/" + indexConfig.index + "/" + indexConfig.type,
             'method': 'POST',
@@ -65,7 +70,10 @@ function EsEntity(opts, entityName, indexConfig, descriptions) {
 
 
     this.update = (id, model, callback) => {
-        delete model['id'];
+        delete model[globalConfig.primaryKey];
+        if (globalConfig.debug) {
+            logger("UPDATE:" + JSON.stringify(model));
+        }
         request({
             'uri': BASE_PATH + "/" + indexConfig.index + "/" + indexConfig.type + "/" + id,
             'method': 'POST',
@@ -88,6 +96,9 @@ function EsEntity(opts, entityName, indexConfig, descriptions) {
 
 
     this.delete = (id, callback) => {
+        if (globalConfig.debug) {
+            logger("DELETE:" + BASE_PATH + "/" + indexConfig.index + "/" + indexConfig.type + "/" + id)
+        }
         request({
             'uri': BASE_PATH + "/" + indexConfig.index + "/" + indexConfig.type + "/" + id,
             'method': 'DELETE'
@@ -112,7 +123,7 @@ function EsEntity(opts, entityName, indexConfig, descriptions) {
                 'method': 'GET'
             }, (err, response, body) => {
                 if (err) {
-                    next(err);
+                    callback(err);
                     return;
                 }
                 let result = JSON.parse(body);
