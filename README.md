@@ -174,6 +174,13 @@ TestType.find({}).matchPhrase("内容1 内容2","name").run((err,list,org) => {
 	console.log(list);
 });
 ```
+改变查询逻辑
+```javascript
+TestType.find({}).match("name1","name",ESOrm.TYPE_OR).run((err,list)=>{
+	console.log(list);
+});
+```
+
 #### 分页
 ```javascript
 TestType.find({}).offset(0).size(100).run((err,list,org) => {
@@ -260,5 +267,33 @@ TestType.find({
 	console.log(list);
 });
 ```
+### 使用滚动
+发起滚动
+```javascript
+TestType.find({}).size(100).scroll().run((err,list,org) => {
+	//如果调用了scroll方法，则org里面会返回一个_scroll_id
+	console.log(org);
+});
+```
+获取下一批数据， scrollId 传入上一个请求返回的 scrollId
+```javascript
+TestType.find({}).scroll(scrollId).run((err, list, org) => {
+	//这个时候的 list 就是 滚动之后的下一批数据 ,而org里面会返回下一步的_scroll_id
+	console.log(list,org);
+});
+```
+
+## 全局配置
+|  配置项 | 默认  | 类型 |  备注  |
+| ------------ | ------------ | ------------ | ------------ |
+| scroll  | 1m  | String  |滚动游标的默认缓存时间   |
+| debug  | false  |  Boolean | 开启debug后，每次请求都会输出请求body |
+
+配置项
+```javascript
+ESORm.set("name","value");
+```
+
+
 ## 关于作者
 作者：Treagzhao      这是我第一次在npm发布模块，敬请各位指教 

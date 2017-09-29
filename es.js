@@ -66,4 +66,8 @@ ElasticSearch.lt = (value, equal) => {
     let intance = new QueryType.Lt(value, equal);
     return intance;
 };
+
+ElasticSearch.set = (name, value) => {
+    globalConfig[name] = value;
+};
 module.exports = ElasticSearch;
