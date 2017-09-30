@@ -22,6 +22,22 @@ function EsEntity(opts, entityName, indexConfig, descriptions) {
         });
     };
 
+    this.mapping = (callback) => {
+        let url = BASE_PATH + "/" + indexConfig.index + "/" + indexConfig.type + "/_mapping";
+        console.log(url);
+        request({
+            'uri': url,
+            'method': 'GET'
+        }, (err, resposne, body) => {
+            if (err) {
+                callback(err);
+                return;
+            }
+            let result = JSON.parse(body);
+            callback(null, result);
+        });
+    };
+
     this.find = (params) => {
         return new ESQuery(opts, entityPath, params, descriptions, config);
     };
