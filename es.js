@@ -8,7 +8,7 @@ let ESQuery = require("./esQuery.js");
 let QueryType = require("./queryType.js");
 let ESEntity = require("./esEntity.js");
 let globalConfig = require("./config.js");
-let boolType = require("./boolTYpe.json");
+let boolType = require("./boolType.json");
 
 function ElasticSearch(opts, config) {
     let entities = {};
