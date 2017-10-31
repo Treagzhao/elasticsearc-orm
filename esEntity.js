@@ -131,7 +131,7 @@ function EsEntity(opts, entityName, indexConfig, descriptions) {
     let init = () => {
         if (!descriptions) {
 
-            throw new Error("descriptions could not be blank");
+           return ;
         }
         let indexExists = thunkify((callback) => {
             request({
