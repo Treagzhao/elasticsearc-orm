@@ -24,7 +24,6 @@ function EsEntity(opts, entityName, indexConfig, descriptions) {
 
     this.mapping = (callback) => {
         let url = BASE_PATH + "/" + indexConfig.index + "/" + indexConfig.type + "/_mapping";
-        console.log(url);
         request({
             'uri': url,
             'method': 'GET'
@@ -131,7 +130,8 @@ function EsEntity(opts, entityName, indexConfig, descriptions) {
 
     let init = () => {
         if (!descriptions) {
-            return;
+
+            throw new Error("descriptions could not be blank");
         }
         let indexExists = thunkify((callback) => {
             request({
