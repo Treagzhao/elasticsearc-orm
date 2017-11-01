@@ -4,7 +4,7 @@ let globalConfig = require("./config.js");
 let logger = globalConfig.logger;
 const BOOL_TYPE = require("./boolType.json");
 let QueryAnalyzer = require("./queryTypeParamsAnalysiz.js");
-
+let Promise = require("./promise.js");
 function Query(opt, path, params, descriptions = {}, config) {
     let domain = opt.domain;
     let port = opt.port;
