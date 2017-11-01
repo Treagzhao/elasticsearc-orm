@@ -14,7 +14,8 @@ function Query(opt, path, params, descriptions = {}, config) {
         columnParams = [],
         mustList = [],
         shouldList = [],
-        notList = [];
+        notList = [],
+        aggs = {};
     let queryString = "",
         scrollTag = false;
 
@@ -85,7 +86,19 @@ function Query(opt, path, params, descriptions = {}, config) {
         if (typeof from === 'number') {
             body.from = from;
         }
+        if (Object.keys(aggs).length > 0) {
+            body.aggs = aggs;
+        }
     }
+
+    this.groupBy = (columnName, displayName) => {
+        aggs[displayName] = {
+            "terms": {
+                'field': columnName
+            }
+        };
+        return this;
+    };
 
     this.scroll = (scrollId) => {
         if (scrollId === undefined) {
@@ -162,14 +175,19 @@ function Query(opt, path, params, descriptions = {}, config) {
             }
             let list = [];
             //出错
-            if (result.status) {
+            if (result.error) {
                 cbk(new Error(result.error.type + " Reason:" + result.error.root_cause[0].reason));
                 return;
             }
-            result.hits.hits.forEach((item) => {
-                item._source[globalConfig.primaryKey] = item._id;
-                list.push(item._source);
-            });
+            //请求列表的情况和groupBy的情况
+            if (body.aggs && result.aggregations) {
+                list = result.aggregations;
+            } else {
+                result.hits.hits.forEach((item) => {
+                    item._source[globalConfig.primaryKey] = item._id;
+                    list.push(item._source);
+                });
+            }
             if (cbk) {
                 cbk(null, list, result);
             }

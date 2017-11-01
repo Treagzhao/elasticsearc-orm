@@ -13,15 +13,12 @@ let ZcOvertime = esInstance.register("zc_overtime", {
     "type": { "type": "long" }
 });
 
-ZcOvertime.find({
-    'createDate': ES.between(new Date(), new Date()),
-    'type': 1
-}).count((err, result) => {});
 
 
-ZcOvertime.find({
-    'createDate': ES.between(new Date(), new Date()),
-    'type': 1
-}).run(() => {
-
+ZcOvertime.find({}).groupBy("type", "type").groupBy("url", "url").run((err, result, org) => {
+    if (err) {
+        console.log(err);
+        return;
+    }
+    console.log(JSON.stringify(result));
 })

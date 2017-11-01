@@ -21,7 +21,7 @@ node 6.0.0+
 ### 注册索引和类型
 通过`register`方法，可以注册一个跟索引和类型绑定的Entity实例
 ```javascript
-var TestType =	esInstance.regster("testtype",{
+var TestType =	esInstance.register("testtype",{
 	"index":"yourindex",
 	"type":"yourtype"
 });
@@ -267,6 +267,21 @@ TestType.find({
 	console.log(list);
 });
 ```
+
+### 使用聚合
+使用groupBy可以获得分组信息，其中第一个参数是需要分组的字段名称，第二个参数是显示名称
+```javascript
+TestType.find({}).groupBy("type","type1").run((err,result,org) => {
+	console.log(list)
+});
+```
+可以同时对两个不同的内容进行聚合
+```javascript
+TestType.find({}).groupBy("type","type1").groupBy("age","age").run((err,result,org) => {
+	console.log(list)
+});
+```
+
 ### 使用滚动
 发起滚动
 ```javascript
