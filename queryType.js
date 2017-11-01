@@ -12,6 +12,9 @@ var Between = function(from, to, equalFrom, equalTo, queryType) {
     this.toString = (key) => {
         return " " + key + ":" + "[" + from + " TO " + to + "]";
     };
+    this.getType = () => {
+        return BOOL_TYPE.TYPE_BETWEEN;
+    };
     this.valueOf = (key) => {
         let params = {};
         if (equalFrom) {

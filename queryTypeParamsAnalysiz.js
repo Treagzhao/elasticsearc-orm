@@ -46,6 +46,9 @@ module.exports = (params) => {
             case BOOL_TYPE.TYPE_NOT:
                 notAnalyzer.addParam(key, value);
                 break;
+            case BOOL_TYPE.TYPE_BETWEEN:
+                mustAnalyzer.addParam(key, value);
+                break;
         }
     });
     return {

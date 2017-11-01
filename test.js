@@ -16,8 +16,7 @@ let ZcOvertime = esInstance.register("zc_overtime", {
 ZcOvertime.find({
     'createDate': ES.between(new Date(), new Date()),
     'type': 1
-}).count((err, result) => {
-});
+}).count((err, result) => {});
 
 
 ZcOvertime.find({
