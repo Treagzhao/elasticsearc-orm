@@ -4,15 +4,25 @@ var esInstance = new ES({
     'port': 9200
 });
 
-
+ES.set("debug", true);
 let ZcOvertime = esInstance.register("zc_overtime", {
     'index': 'zc_overtime',
     'type': 'zc_overtime_2017-11-01'
+}, {
+    'url': { "type": "string" },
+    "type": { "type": "long" }
 });
 
 ZcOvertime.find({
     'createDate': ES.between(new Date(), new Date()),
     'type': 1
-}).match("adffd", "pid").count((err, result) => {
-    console.log(err, result);
+}).count((err, result) => {
 });
+
+
+ZcOvertime.find({
+    'createDate': ES.between(new Date(), new Date()),
+    'type': 1
+}).run(() => {
+
+})

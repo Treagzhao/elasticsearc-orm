@@ -43,19 +43,6 @@ function Query(opt, path, params, descriptions = {}, config) {
                     "bool": {}
                 };
             }
-            // if (value instanceof QueryType.BaseType) {
-            //     let para = value.valueOf(key, descriptions);
-            //     if (value instanceof QueryType.Or) {
-            //         innerShouldList.push(para);
-            //     } else {
-            //         if (!innerRangeQuery) {
-            //             innerRangeQuery = {
-            //                 "range": {}
-            //             };
-            //         }
-            //         innerRangeQuery.range[key] = para;
-            //     }
-            // } else
             if (!(value instanceof QueryType.BaseType)) {
                 //精确匹配
                 let dataType = getColumnType(key);
@@ -278,6 +265,9 @@ function Query(opt, path, params, descriptions = {}, config) {
         let chunk = [];
         var promise = new Promise();
         body.size = 0;
+        if (globalConfig.debug) {
+            globalConfig.logger(JSON.stringify(body));
+        }
         request({
             'method': 'POST',
             'uri': url,
