@@ -10,6 +10,9 @@ let ZcOvertime = esInstance.register("zc_overtime", {
     'type': 'zc_overtime_2017-11-01'
 });
 
-ZcOvertime.find({}).count((err, result) => {
+ZcOvertime.find({
+    'createDate': ES.between(new Date(), new Date()),
+    'type': 1
+}).match("adffd", "pid").count((err, result) => {
     console.log(err, result);
 });

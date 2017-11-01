@@ -5,6 +5,7 @@ let logger = globalConfig.logger;
 const BOOL_TYPE = require("./boolType.json");
 let QueryAnalyzer = require("./queryTypeParamsAnalysiz.js");
 let Promise = require("./promise.js");
+
 function Query(opt, path, params, descriptions = {}, config) {
     let domain = opt.domain;
     let port = opt.port;
@@ -300,10 +301,18 @@ function Query(opt, path, params, descriptions = {}, config) {
                 }
                 return;
             }
-            if (cbk) {
-                cbk(null, +result.hits.total);
+            if (result.error) {
+                if (cbk) {
+                    cbk(new Error(result.error));
+                } else {
+                    promise.reject(result.error);
+                }
             } else {
-                promise.resolve(+result.hits.total);
+                if (cbk) {
+                    cbk(null, +result.hits.total);
+                } else {
+                    promise.resolve(+result.hits.total);
+                }
             }
         }).on("error", (err) => {
             if (cbk) {
