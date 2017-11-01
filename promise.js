@@ -1,5 +1,3 @@
-var logger = require("log4js").getLogger();
-
 function Promise(global) {
     var list = [];
     var _self = this;

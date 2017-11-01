@@ -1,12 +1,15 @@
-var request = require("request");
-request.post({
-    'url': 'http://kf.stnts.com/chat/user/config.action',
-    'formData': {
-        'sysNum': '41076deba1104a1ba055bc38sheng3f4',
-        'source': 0,
-        'lanFlag': 0,
-        'robotFlag': ''
-    }
-}, (err, response, body) => {
-    console.log(body);
+var ES = require("./es.js");
+var esInstance = new ES({
+    'domain': '10.172.232.237',
+    'port': 9200
+});
+
+
+let ZcOvertime = esInstance.register("zc_overtime", {
+    'index': 'zc_overtime',
+    'type': 'zc_overtime_2017-11-01'
+});
+
+ZcOvertime.find({}).count((err, result) => {
+    console.log(err, result);
 });
