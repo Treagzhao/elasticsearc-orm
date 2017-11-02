@@ -140,6 +140,7 @@ function Query(opt, path, params, descriptions = {}, config) {
 
     this.run = (cbk) => {
         initParams();
+        body.size = size;
         let url = "http://" + domain + ":" + port + path + "/_search";
         if (scrollTag) {
             url += "?scroll=" + globalConfig.scroll;
