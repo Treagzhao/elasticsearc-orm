@@ -1,6 +1,6 @@
 var ES = require("./es.js");
 var esInstance = new ES({
-    'domain': '10.172.232.237',
+    'domain': '10.44.48.154',
     'port': 9200
 });
 
@@ -17,7 +17,9 @@ let ZcOvertime = esInstance.register("zc_overtime", {
 let resultSet = ZcOvertime.find({
     'type': 1
 });
-resultSet.count((err, count) => {
+resultSet.count((err, count, org) => {
+    if (err) {
+    }
     resultSet.run((err, result, org) => {
         if (err) {
             console.log(err);

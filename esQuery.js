@@ -180,7 +180,13 @@ function Query(opt, path, params, descriptions = {}, config) {
             let list = [];
             //出错
             if (result.error) {
-                cbk(new Error(result.error.type + " Reason:" + result.error.root_cause[0].reason));
+                let error;
+                if (typeof result.error === 'string') {
+                    error = result.error;
+                } else if (typeof result === 'object') {
+                    error = result.error.type + " Reason:" + result.error.root_cause[0].reason;
+                }
+                cbk(new Error(error));
                 return;
             }
             //请求列表的情况和groupBy的情况
@@ -314,10 +320,16 @@ function Query(opt, path, params, descriptions = {}, config) {
                 return;
             }
             if (result.error) {
+                let error;
+                if (typeof result.error === 'string') {
+                    error = result.error;
+                } else if (typeof result === 'object') {
+                    error = result.error.type + " Reason:" + result.error.root_cause[0].reason;
+                }
                 if (cbk) {
-                    cbk(new Error(result.error.type + " Reason:" + result.error.root_cause[0].reason));
+                    cbk(new Error(error));
                 } else {
-                    promise.reject(new Error(result.error.type + " Reason:" + result.error.root_cause[0].reason));
+                    promise.reject(new Error(error));
                 }
             } else {
                 if (cbk) {
