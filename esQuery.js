@@ -9,7 +9,7 @@ let Promise = require("./promise.js");
 function Query(opt, path, params, descriptions = {}, config) {
     let domain = opt.domain;
     let port = opt.port;
-    let from;
+    let from, size;
     let body = {},
         columnParams = [],
         mustList = [],
@@ -33,6 +33,7 @@ function Query(opt, path, params, descriptions = {}, config) {
 
     let initParams = () => {
         let bodyInfo = {};
+        delete body.size;
         let analyzResult = QueryAnalyzer(params);
         let innerMustList = analyzResult.must,
             innerShouldList = analyzResult.should,
@@ -88,6 +89,9 @@ function Query(opt, path, params, descriptions = {}, config) {
         }
         if (Object.keys(aggs).length > 0) {
             body.aggs = aggs;
+        }
+        if (size) {
+            body.size = size;
         }
     }
 
@@ -199,8 +203,8 @@ function Query(opt, path, params, descriptions = {}, config) {
 
     };
 
-    this.size = (size) => {
-        body.size = size;
+    this.size = (s) => {
+        size = s;
         return this;
     };
 
@@ -311,9 +315,9 @@ function Query(opt, path, params, descriptions = {}, config) {
             }
             if (result.error) {
                 if (cbk) {
-                    cbk(new Error(result.error));
+                    cbk(new Error(result.error.type + " Reason:" + result.error.root_cause[0].reason));
                 } else {
-                    promise.reject(result.error);
+                    promise.reject(new Error(result.error.type + " Reason:" + result.error.root_cause[0].reason));
                 }
             } else {
                 if (cbk) {

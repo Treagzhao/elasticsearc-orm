@@ -14,11 +14,14 @@ let ZcOvertime = esInstance.register("zc_overtime", {
 });
 
 
-
-ZcOvertime.find({}).groupBy("type", "type").groupBy("url", "url").run((err, result, org) => {
-    if (err) {
-        console.log(err);
-        return;
-    }
-    console.log(JSON.stringify(result));
-})
+let resultSet = ZcOvertime.find({
+    'type': 1
+});
+resultSet.count((err, count) => {
+    resultSet.run((err, result, org) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+    })
+});
