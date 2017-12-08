@@ -17,8 +17,8 @@ let ZcOvertime = esInstance.register("blog_article", {
 });
 
 
-ZcOvertime.find({}).matchPhrase('测试', 'title', ES.TYPE_OR).matchPhrase('测试', 'summary', ES.TYPE_OR).filter("published", true).filter("title", '测试文章19').run((err, list) => {
-    if(err){
+ZcOvertime.find({}).matchPhrase('测试', 'title', ES.TYPE_OR).matchPhrase('测试', 'summary', ES.TYPE_OR).filter("published", true).run((err, list) => {
+    if (err) {
         console.error(err);
     }
     console.log(list);

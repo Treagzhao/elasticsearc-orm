@@ -1,7 +1,5 @@
 let termBuilder = (obj, item) => {
-    if (!obj.term) {
-        obj.term = {};
-    }
+    obj.term = {};
     obj.term[item.name] = item.value;
 };
 
