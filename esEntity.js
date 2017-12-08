@@ -42,6 +42,9 @@ function EsEntity(opts, entityName, indexConfig, descriptions) {
     };
 
 
+    // this.filter = () => {
+    //     return new ESQuery(opts, entityPath, params, descriptions, config);
+    // };
     this.get = (id, callback) => {
         if (globalConfig.debug) {
             logger("GET:" + BASE_PATH + '/' + indexConfig.index + "/" + indexConfig.type + "/" + id);
@@ -131,7 +134,7 @@ function EsEntity(opts, entityName, indexConfig, descriptions) {
     let init = () => {
         if (!descriptions) {
 
-           return ;
+            return;
         }
         let indexExists = thunkify((callback) => {
             request({

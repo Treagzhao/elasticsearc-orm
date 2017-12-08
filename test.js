@@ -1,29 +1,25 @@
 var ES = require("./es.js");
 var esInstance = new ES({
-    'domain': '10.44.48.154',
+    'domain': '127.0.0.1',
     'port': 9200
 });
 
 ES.set("debug", true);
-let ZcOvertime = esInstance.register("zc_overtime", {
-    'index': 'zc_overtime',
-    'type': 'zc_overtime_2017-11-01'
+let ZcOvertime = esInstance.register("blog_article", {
+    'index': 'blog_article',
+    'type': 'blog_article'
 }, {
-    'url': { "type": "string" },
-    "type": { "type": "long" }
+    "mysqlId": { "type": "string", "index": "not_analyzed" },
+    "summary": { "type": "string", "analyzer": "ik_max_word" },
+    "title": { "type": "string", "analyzer": "ik_max_word" },
+    "published": { "type": "boolean" },
+    "createDate": { "type": "date" }
 });
 
 
-let resultSet = ZcOvertime.find({
-    'type': 1
-});
-resultSet.count((err, count, org) => {
-    if (err) {
+ZcOvertime.find({}).matchPhrase('测试', 'title', ES.TYPE_OR).matchPhrase('测试', 'summary', ES.TYPE_OR).filter("published", true).filter("title", '测试文章19').run((err, list) => {
+    if(err){
+        console.error(err);
     }
-    resultSet.run((err, result, org) => {
-        if (err) {
-            console.log(err);
-            return;
-        }
-    })
+    console.log(list);
 });

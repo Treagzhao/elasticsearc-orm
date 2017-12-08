@@ -5,6 +5,7 @@ let logger = globalConfig.logger;
 const BOOL_TYPE = require("./boolType.json");
 let QueryAnalyzer = require("./queryTypeParamsAnalysiz.js");
 let Promise = require("./promise.js");
+let FilterBuilder = require("./builder/filterBuilder.js");
 
 function Query(opt, path, params, descriptions = {}, config) {
     let domain = opt.domain;
@@ -15,6 +16,7 @@ function Query(opt, path, params, descriptions = {}, config) {
         mustList = [],
         shouldList = [],
         notList = [],
+        filterList = [],
         aggs = {};
     let queryString = "",
         scrollTag = false;
@@ -90,6 +92,9 @@ function Query(opt, path, params, descriptions = {}, config) {
         if (Object.keys(aggs).length > 0) {
             body.aggs = aggs;
         }
+        if (filterList.length > 0) {
+            body.filter = FilterBuilder(filterList);
+        }
         if (size) {
             body.size = size;
         }
@@ -116,6 +121,18 @@ function Query(opt, path, params, descriptions = {}, config) {
 
     this.source = (source) => {
         body._source = source;
+        return this;
+    };
+
+    this.filter = (column, value) => {
+        var typeOfValue = typeof value;
+        if (typeOfValue === 'string' || typeOfValue === 'boolean' || typeOfValue === 'number') {
+            filterList.push({
+                'name': column,
+                'type': 'term',
+                'value': value
+            });
+        }
         return this;
     };
 
