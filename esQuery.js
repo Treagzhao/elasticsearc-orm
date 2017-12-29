@@ -96,7 +96,10 @@ function Query(opt, path, params, descriptions = {}, config) {
             if (!body.query) {
                 body.query = {};
             }
-            body.query.filter = FilterBuilder(filterList);
+            if(!body.query.bool){
+                body.query.bool = {};
+            }
+            body.query.bool.filter = FilterBuilder(filterList);
         }
         if (size) {
             body.size = size;
