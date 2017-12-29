@@ -93,7 +93,10 @@ function Query(opt, path, params, descriptions = {}, config) {
             body.aggs = aggs;
         }
         if (filterList.length > 0) {
-            body.filter = FilterBuilder(filterList);
+            if (!body.query) {
+                body.query = {};
+            }
+            body.query.filter = FilterBuilder(filterList);
         }
         if (size) {
             body.size = size;
