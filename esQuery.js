@@ -96,7 +96,7 @@ function Query(opt, path, params, descriptions = {}, config) {
             if (!body.query) {
                 body.query = {};
             }
-            if(!body.query.bool){
+            if (!body.query.bool) {
                 body.query.bool = {};
             }
             body.query.bool.filter = FilterBuilder(filterList);
@@ -105,6 +105,17 @@ function Query(opt, path, params, descriptions = {}, config) {
             body.size = size;
         }
     }
+
+    this.addBoolQuery = (boolQuery, queryType) => {
+        if (!queryType) {
+            mustList.push(boolQuery.getValue());
+        } else if (queryType === BOOL_TYPE.TYPE_OR) {
+            shouldList.push(boolQuery.getValue());
+        } else if (queryType === BOOL_TYPE.TYPE_NOT) {
+            notList.push(boolQuery.getValue());
+        }
+        return this;
+    };
 
     this.groupBy = (columnName, displayName) => {
         aggs[displayName] = {

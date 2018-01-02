@@ -36,6 +36,7 @@ var Or = function(value) {
     this.getType = () => {
         return BOOL_TYPE.TYPE_OR;
     };
+
     this.toString = (key) => {
         return " OR " + key + ":" + name + " ";
     };
@@ -62,12 +63,11 @@ var Not = function(value, queryType) {
 
 
 var Gt = function(value, equal, queryType) {
-    this.queryType = queryType;
+    this.queryType = queryType || BOOL_TYPE.TYPE_MUST;
+    this.getType = () => {
+        return queryType;
+    };
     this.valueOf = (key, descriptions) => {
-        let column = descriptions[key];
-        if (!column) {
-            throw new Error("column in not declared");
-        }
         let obj = {};
         let keyName = !!equal ? "gte" : "gt";
         obj[keyName] = value;
@@ -75,12 +75,11 @@ var Gt = function(value, equal, queryType) {
     };
 };
 var Lt = function(value, equal, queryType) {
-    this.queryType = queryType;
-    this.valueOf = (key, descriptions) => {
-        let column = descriptions[key];
-        if (!column) {
-            throw new Error("column in not declared");
-        }
+    this.queryType = queryType || BOOL_TYPE.TYPE_MUST;
+    this.getType = () => {
+        return this.queryType;
+    };
+    this.valueOf = (key) => {
         let obj = {};
         let keyName = !!equal ? "lte" : "lt";
         obj[keyName] = value;

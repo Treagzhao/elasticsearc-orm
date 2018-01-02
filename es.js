@@ -9,6 +9,7 @@ let QueryType = require("./queryType.js");
 let ESEntity = require("./esEntity.js");
 let globalConfig = require("./config.js");
 let boolType = require("./boolType.json");
+let BoolQuery = require("./boolQuery.js");
 
 function ElasticSearch(opts, config) {
     let entities = {};
@@ -75,4 +76,6 @@ ElasticSearch.lt = (value, equal) => {
 ElasticSearch.set = (name, value) => {
     globalConfig[name] = value;
 };
+
+ElasticSearch.BoolQuery = BoolQuery;
 module.exports = ElasticSearch;
