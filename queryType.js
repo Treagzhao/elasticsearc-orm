@@ -13,7 +13,7 @@ var Between = function(from, to, equalFrom, equalTo, queryType) {
         return " " + key + ":" + "[" + from + " TO " + to + "]";
     };
     this.getType = () => {
-        return BOOL_TYPE.TYPE_BETWEEN;
+        return queryType;
     };
     this.valueOf = (key) => {
         let params = {};
@@ -62,10 +62,10 @@ var Not = function(value, queryType) {
 };
 
 
-var Gt = function(value, equal, queryType) {
+var Gt = function(value, equal, queryType = 0) {
     this.queryType = queryType || BOOL_TYPE.TYPE_MUST;
     this.getType = () => {
-        return queryType;
+        return this.queryType;
     };
     this.valueOf = (key, descriptions) => {
         let obj = {};
@@ -74,7 +74,7 @@ var Gt = function(value, equal, queryType) {
         return obj;
     };
 };
-var Lt = function(value, equal, queryType) {
+var Lt = function(value, equal, queryType = 0) {
     this.queryType = queryType || BOOL_TYPE.TYPE_MUST;
     this.getType = () => {
         return this.queryType;

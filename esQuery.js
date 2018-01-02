@@ -251,11 +251,11 @@ function Query(opt, path, params, descriptions = {}, config) {
 
 
     this.gt = (value, name, equal, type) => {
-        params[name] = new QueryType.Gt(value, equal);
+        params[name] = new QueryType.Gt(value, equal, type);
         return this;
     };
     this.lt = (value, name, equal, type) => {
-        params[name] = new QueryType.Lt(value, equal);
+        params[name] = new QueryType.Lt(value, equal, type);
         return this;
     };
 

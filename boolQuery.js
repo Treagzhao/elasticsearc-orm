@@ -41,7 +41,6 @@ function BoolQuery(params = {}) {
         if (notList.length > 0 || innerNotList.length > 0) {
             data.bool.not = notList.concat(innerNotList);
         }
-        console.log(JSON.stringify(data));
     };
 
     this.matchPhrase = (value, column, queryType) => {
