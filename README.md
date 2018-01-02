@@ -298,6 +298,22 @@ TestType.find({}).scroll(scrollId).run((err, list, org) => {
 });
 ```
 
+## 多层嵌套的逻辑查询
+建立一个逻辑查询
+```javascript
+var boolQuery = new ES.BoolQuery({
+    age:1
+}).gt(10,"age",true,ES.TYPE_OR);
+```
+将新建立的逻辑查询加入到原有的查询中
+
+```javascript
+TestType.find({}).matchPhrase("赵","name").addBoolQuery(boolQuery,ES.TYPE_MUST).run((err,list,org) =>{
+    console.log(list);
+});
+```
+逻辑查询支持的子查询有 match、matchPhrase、gt、lt、term和between 
+
 ## 全局配置
 |  配置项 | 默认  | 类型 |  备注  |
 | ------------ | ------------ | ------------ | ------------ |
@@ -307,7 +323,9 @@ TestType.find({}).scroll(scrollId).run((err, list, org) => {
 
 配置项
 ```javascript
+
 ESORm.set("name","value");
+
 ```
 
 
