@@ -74,6 +74,9 @@ function EsEntity(opts, entityName, indexConfig, descriptions) {
         }
         request({
             'uri': BASE_PATH + "/" + indexConfig.index + "/" + indexConfig.type,
+            'headers': {
+                'Content-Type': 'application/json'
+            },
             'method': 'POST',
             'body': JSON.stringify(data)
         }, (err, response, body) => {
