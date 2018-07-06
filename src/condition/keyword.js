@@ -21,6 +21,19 @@ module.exports = function() {
         return this;
     };
 
+    this.exists = (field) => {
+        if (typeof field !== 'string') {
+            throw new Error('arguments type error');
+        }
+        this.count++;
+        this.must.push({
+            'exists': {
+                'field': field
+            }
+        })
+        return this;
+    }
+
     this.range = (field, from, to, equalFrom, equalTo) => {
         if (typeof field !== 'string' || from === undefined || to === undefined) {
             throw new Error('arguments type error');
@@ -45,4 +58,45 @@ module.exports = function() {
         });
         return this;
     };
+
+
+    this.prefix = (field, value) => {
+        if (typeof field !== 'string' || value === undefined) {
+            throw new Error('arguments type error');
+        }
+
+        this.count++;
+        this.must.push({
+            'prefix': {
+                [field]: value
+            }
+        })
+        return this;
+    }
+    this.wildcard = (field, value) => {
+        if (typeof field !== 'string' || value === undefined) {
+            throw new Error('arguments type error');
+        }
+
+        this.count++;
+        this.must.push({
+            'wildcard': {
+                [field]: value
+            }
+        })
+        return this;
+    }
+    this.fuzzy = (field, value) => {
+        if (typeof field !== 'string' || value === undefined) {
+            throw new Error('arguments type error');
+        }
+
+        this.count++;
+        this.must.push({
+            'wildcard': {
+                [field]: value
+            }
+        })
+        return this;
+    }
 };
