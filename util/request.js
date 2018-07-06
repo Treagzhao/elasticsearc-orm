@@ -19,8 +19,9 @@ module.exports = (opts) => {
             }
             try {
                 body = JSON.parse(body);
-                if (response.statusCode !== 200) {
-                    reject(new Error(response.statusCode + ": " + body.error.reason));
+                if (response.statusCode >= 300) {
+                    let error = body.result || body.error.reason;
+                    reject(new Error(response.statusCode + ": " + error));
                 } else {
                     resolve(body);
                 }
