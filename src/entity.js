@@ -1,7 +1,9 @@
 const request = require('../util/request.js');
 const config = require('../util/globalConfig.js');
+const Condition = require('./esCondition.js');
 module.exports = function(name, opts, mappings, settings) {
     const self = this;
+    Condition.call(this);
     const DOMAIN = config.get('domain'),
         PORT = config.get('port'),
         BASE_URL = config.get('BASE_URL'),
@@ -126,6 +128,27 @@ module.exports = function(name, opts, mappings, settings) {
         return {
             data,
             orgData: body
+        }
+    };
+
+    this.query = async() => {
+        let obj = this.valueOf();
+        const body = {
+            'query': obj
+        };
+        const url = `${BASE_URL}${INDEX}/${TYPE}/_search`;
+        let result = await request({
+            url,
+            'body': JSON.stringify(body),
+            'method': 'POST',
+        });
+        let list = result.hits.hits.map((item) => {
+            item._source.id = item._id;
+            return item._source;
+        });
+        return {
+            list,
+            'orgResult': result
         }
     };
 

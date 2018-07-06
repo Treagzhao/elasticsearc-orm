@@ -2,7 +2,7 @@ const EventEmitter = require('events').EventEmitter;
 const request = require('./util/request.js');
 const config = require('./util/globalConfig.js');
 const Entity = require('./src/entity.js');
-
+const Condition = require('./src/esCondition.js');
 const buildVersion = (number) => {
     let list = number.split(',').map((item) => {
         return +item;
@@ -54,10 +54,14 @@ function Connection(opts) {
 };
 
 Connection.prototype = new EventEmitter();
-module.exports = (opts) => {
+
+const ES = (opts) => {
     if (!opts.domain || !opts.port) {
         throw new Error("opts params is invalide");
     }
     let conn = new Connection(opts);
     return conn;
-}
+};
+
+ES.Condition = Condition;
+module.exports = ES;
