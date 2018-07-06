@@ -8,22 +8,25 @@ module.exports = function(name, opts, mappings, settings) {
         INDEX = opts.index,
         TYPE = opts.type;
     let exists;
+
+
     const checkExists = async() => {
-        const url = BASE_URL + INDEX + (!!TYPE ? '/' + TYPE : '');
-        let result, flag;
+        const url = BASE_URL + INDEX;
+        let result, flag = false;
         try {
             result = await request({
                 'url': url,
                 'method': 'GET'
             });
-            flag = true;
+            let mappings = result[INDEX].mappings;
+            flag = mappings.hasOwnProperty(TYPE);
         } catch (e) {
-            flag = false;
+            return false;
         }
         return flag;
     };
 
-    const create = async() => {
+    this.create = async() => {
         const url = BASE_URL + INDEX;
         const data = {};
         if (settings) {
@@ -31,10 +34,16 @@ module.exports = function(name, opts, mappings, settings) {
         }
         if (mappings) {
             data.mappings = {
-                [TYPE]: mappings
+                [TYPE]: {
+                    'properties': mappings
+                }
             };
         }
-        console.log(data);
+        let body = await request({
+            'url': url,
+            'method': 'PUT',
+            'body': JSON.stringify(data)
+        });
     };
 
     const init = async() => {
@@ -46,7 +55,7 @@ module.exports = function(name, opts, mappings, settings) {
             await checkExists();
         }
         if (!exists) {
-            await create();
+            await self.create();
         } else {
 
         }

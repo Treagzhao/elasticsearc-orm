@@ -3,6 +3,13 @@ const request = require('./util/request.js');
 const config = require('./util/globalConfig.js');
 const Entity = require('./src/entity.js');
 
+const buildVersion = (number) => {
+    let list = number.split(',').map((item) => {
+        return +item;
+    });
+    return list;
+};
+
 function Connection(opts) {
     EventEmitter.call(this);
     const self = this;
@@ -13,7 +20,7 @@ function Connection(opts) {
         let body = await request({
             'url': BASE_URL
         });
-        config.set('version', body.version.number);
+        config.set('version', buildVersion(body.version.number));
     };
 
     let connect = async() => {
