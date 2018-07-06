@@ -24,7 +24,10 @@ function Connection(opts) {
         if (!opts.index) {
             throw new Error("index could not be blank");
         }
-        entities.set(new Entity(name, opts, mappings, settings));
+        if (!opts.type) {
+            throw new Error('type could not be blank');
+        }
+        entities.set(name, new Entity(name, opts, mappings, settings));
         return entities.get(name);
     };
 

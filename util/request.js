@@ -20,7 +20,7 @@ module.exports = (opts) => {
             try {
                 body = JSON.parse(body);
                 if (response.statusCode !== 200) {
-                    reject(new Error(body.error));
+                    reject(new Error(body.error.reason));
                 } else {
                     resolve(body);
                 }
