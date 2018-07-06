@@ -56,6 +56,8 @@ module.exports = function(name, opts, mappings, settings) {
         let incremental = {};
         if (mappings && dbMappings) {
             Object.keys(mappings).filter((key) => {
+                console.log('key',key,dbMappings);
+
                 return !dbMappings.hasOwnProperty(key);
             }).forEach((key) => {
                 incremental[key] = mappings[key];

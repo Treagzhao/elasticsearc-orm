@@ -1,9 +1,11 @@
 const TextCondition = require('./condition/text.js'),
-    KeywordCondition = require('./condition/keyword.js');
+    KeywordCondition = require('./condition/keyword.js'),
+    GeoCondition = require('./condition/geo.js');
 
 module.exports = function() {
     TextCondition.call(this);
     KeywordCondition.call(this);
+    GeoCondition.call(this);
     var self = this;
     this.must = [];
     this.should = [];
