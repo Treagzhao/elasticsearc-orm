@@ -95,7 +95,6 @@ module.exports = function(name, opts, mappings, settings) {
             url,
             'method': 'DELETE'
         });
-        console.log(result);
     };
 
     this.create = async(data, id = '') => {

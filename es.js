@@ -38,6 +38,10 @@ function Connection(opts) {
         return entities.get(name);
     };
 
+    this.set = (key, value) => {
+        config.set(key, value);
+    };
+
 
     connect().then((ret) => {
         config.set('domain', opts.domain);
