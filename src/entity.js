@@ -10,7 +10,19 @@ module.exports = function(name, opts, mappings, settings) {
         INDEX = opts.index,
         TYPE = opts.type;
     let exists, dbMappings;
-
+    this.sortList = [];
+    this.sourceList = [];
+    const reset = () => {
+        this.mustList = [];
+        this.shouldList = [];
+        this.notList = [];
+        this.filterList = [];
+        this.sortList = [];
+        this.sourceList = [];
+        this.count = 0;
+        this.offset = undefined;
+        this.limit = undefined;
+    };
 
     const checkExists = async() => {
         const url = BASE_URL + INDEX;
@@ -76,6 +88,21 @@ module.exports = function(name, opts, mappings, settings) {
 
 
 
+    this.from = (from) => {
+        if (isNaN(from)) {
+            throw new Error('from parameter is invalid');
+        }
+        this.offset = from;
+        return this;
+    };
+    this.size = (size) => {
+        if (isNaN(size)) {
+            throw new Error('from parameter is invalid');
+        }
+        this.limit = size;
+        return this;
+    };
+
     this.sync = async() => {
         if (exists === undefined) {
             exists = await checkExists();
@@ -99,6 +126,37 @@ module.exports = function(name, opts, mappings, settings) {
             url,
             'method': 'DELETE'
         });
+    };
+
+    this.sort = (...args) => {
+        if (args.length === 1 && typeof args[0] === 'object') {
+            this.sortList.push(args[0]);
+        } else {
+            let [field, type, mode] = args;
+            if (typeof field !== 'string' || typeof type !== 'string') {
+                throw new Error('arguments type error');
+            }
+            type = type.toLowerCase();
+            if (type !== 'asc' && type !== 'desc') {
+                throw new Error('arguments type must be one of `asc` or `desc`');
+            }
+            let item = {
+                [field]: {
+                    'order': type
+                }
+            };
+            if (!!mode) {
+                item[field].mode = mode;
+            }
+            this.sortList.push(item);
+        }
+        return this;
+    }
+
+    this.source = (sources) => {
+        this.sourceList = sources;
+
+        return this;
     };
 
     this.create = async(data, id = '') => {
@@ -138,6 +196,18 @@ module.exports = function(name, opts, mappings, settings) {
         const body = {
             'query': obj
         };
+        if (this.offset !== undefined) {
+            body.from = this.offset;
+        }
+        if (this.limit !== undefined) {
+            body.size = this.limit;
+        }
+        if (this.sortList.length > 0) {
+            body.sort = this.sortList;
+        }
+        if (!!this.sourceList) {
+            body['_source'] = this.sourceList;
+        }
         const url = `${BASE_URL}${INDEX}/${TYPE}/_search`;
         let result = await request({
             url,
@@ -148,6 +218,7 @@ module.exports = function(name, opts, mappings, settings) {
             item._source.id = item._id;
             return item._source;
         });
+        reset();
         return {
             list,
             'orgResult': result

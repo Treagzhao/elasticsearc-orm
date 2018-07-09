@@ -10,6 +10,7 @@ module.exports = function() {
     this.mustList = [];
     this.shouldList = [];
     this.notList = [];
+    this.filterList = [];
     this.count = 0;
 
 
