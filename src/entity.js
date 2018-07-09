@@ -43,24 +43,53 @@ module.exports = function(name, opts, mappings, settings) {
         return flag;
     };
 
+    const checkIndexExists = async() => {
+        let flag = false;
+        try {
+            let url = `${BASE_URL}${INDEX}`;
+            let ret = await request({
+                'url': url,
+                'method': 'GET'
+            });
+            return true;
+
+        } catch (e) {
+            return flag;
+        }
+    };
+
     const createDb = async() => {
-        const url = BASE_URL + INDEX;
-        const data = {};
-        if (settings) {
-            data.settings = settings;
-        }
-        if (mappings) {
-            data.mappings = {
-                [TYPE]: {
-                    'properties': mappings
-                }
+        let indexExists = await checkIndexExists();
+        if (!indexExists) {
+            const url = BASE_URL + INDEX;
+            const data = {};
+            if (settings) {
+                data.settings = settings;
+            }
+            if (mappings) {
+                data.mappings = {
+                    [TYPE]: {
+                        'properties': mappings
+                    }
+                };
+            }
+            let body = await request({
+                'url': url,
+                'method': 'PUT',
+                'body': JSON.stringify(data)
+            });
+        } else {
+            const url = `${BASE_URL}${INDEX}/${TYPE}`;
+            let params = {
+                mappings
             };
+            let ret = await request({
+                url,
+                'method': 'POST',
+                'body': JSON.stringify(params)
+            });
+            console.log('ret', ret);
         }
-        let body = await request({
-            'url': url,
-            'method': 'PUT',
-            'body': JSON.stringify(data)
-        });
     };
 
 
@@ -108,7 +137,7 @@ module.exports = function(name, opts, mappings, settings) {
             exists = await checkExists();
         }
         if (!exists) {
-            await self.createDb();
+            await createDb();
         } else {
             await updateDb();
         }
