@@ -7,13 +7,13 @@ module.exports = function() {
 
         this.count++;
         if (Object.prototype.toString.call(value).indexOf('Array') >= 0) {
-            this.must.push({
+            this.mustList.push({
                 'terms': {
                     [field]: value
                 }
             })
         } else {
-            this.must.push({
+            this.mustList.push({
                 'term': {
                     [field]: value
                 }
@@ -28,7 +28,7 @@ module.exports = function() {
         }
         let key = typeof field === 'string' ? 'field' : 'fields'
         this.count++;
-        this.must.push({
+        this.mustList.push({
             'exists': {
                 [key]: field
             }
@@ -55,7 +55,7 @@ module.exports = function() {
             let condition = "lt" + (!!equalTo ? "e" : "");
             param[field][condition] = to;
         }
-        this.must.push({
+        this.mustList.push({
             'range': param
         });
         return this;
@@ -70,7 +70,7 @@ module.exports = function() {
             [field]: rangeParam
         };
         this.count++;
-        this.must.push({
+        this.mustList.push({
             'range': param
         });
         return this;
@@ -94,7 +94,7 @@ module.exports = function() {
         }
 
         this.count++;
-        this.must.push({
+        this.mustList.push({
             'prefix': {
                 [field]: value
             }
@@ -107,7 +107,7 @@ module.exports = function() {
         }
 
         this.count++;
-        this.must.push({
+        this.mustList.push({
             'wildcard': {
                 [field]: value
             }
@@ -120,7 +120,7 @@ module.exports = function() {
         }
 
         this.count++;
-        this.must.push({
+        this.mustList.push({
             'wildcard': {
                 [field]: value
             }

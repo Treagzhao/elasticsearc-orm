@@ -27,7 +27,7 @@ module.exports = function() {
             param['geo_shape'][field].shape.radius = opts.radius;
         }
 
-        this.must.push(param);
+        this.mustList.push(param);
         return this;
     };
 
@@ -45,7 +45,7 @@ module.exports = function() {
                 [field]: coordinates
             }
         };
-        this.must.push(param);
+        this.mustList.push(param);
         return this;
     }
 
@@ -67,7 +67,7 @@ module.exports = function() {
                 }
             }
         };
-        this.must.push(param);
+        this.mustList.push(param);
         return this;
     }
 
@@ -98,7 +98,7 @@ module.exports = function() {
     //     }
 
     //     this.count++;
-    //     this.must.push(param);
+    //     this.mustList.push(param);
     //     return this;
     // };
 
@@ -118,7 +118,7 @@ module.exports = function() {
                 }
             }
         };
-        this.must.push(param);
+        this.mustList.push(param);
         return this;
     }
 

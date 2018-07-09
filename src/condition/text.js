@@ -5,7 +5,7 @@ module.exports = function() {
         }
         if (typeof field === 'string') {
             this.count++;
-            this.must.push({
+            this.mustList.push({
                 'match': {
                     [field]: value
                 }
@@ -21,7 +21,7 @@ module.exports = function() {
             if (opts.type) {
                 condition['multi_match'].type = opts.type;
             }
-            this.must.push(condition);
+            this.mustList.push(condition);
         } else {
             throw new Error('arguments type error');
         }
@@ -33,7 +33,7 @@ module.exports = function() {
             throw new Error('arguments type error');
         }
         this.count++;
-        this.must.push({
+        this.mustList.push({
             'match_phrase': {
                 [field]: value
             }
@@ -45,7 +45,7 @@ module.exports = function() {
             throw new Error('arguments type error');
         }
         this.count++;
-        this.must.push({
+        this.mustList.push({
             'match_phrase_prefix': {
                 [field]: value
             }
