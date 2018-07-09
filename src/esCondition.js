@@ -1,11 +1,13 @@
 const TextCondition = require('./condition/text.js'),
     KeywordCondition = require('./condition/keyword.js'),
-    GeoCondition = require('./condition/geo.js');
+    GeoCondition = require('./condition/geo.js'),
+    RelationCondition = require('./condition/relation.js');
 
 module.exports = function() {
     TextCondition.call(this);
     KeywordCondition.call(this);
     GeoCondition.call(this);
+    RelationCondition.call(this);
     var self = this;
     this.mustList = [];
     this.shouldList = [];
@@ -80,6 +82,10 @@ module.exports = function() {
                 'bool': ret
             };
         }
+    };
+
+    this.isInstanceofCondition = () => {
+        return this instanceof module.exports;
     };
 
     this.filter = (condition) => {

@@ -2,7 +2,7 @@ const request = require('../util/request.js');
 const config = require('../util/globalConfig.js');
 const Condition = require('./esCondition.js'),
     Aggs = require('./esAggs.js');
-module.exports = function(name, opts, mappings, settings) {
+module.exports = function(name, opts, mappings = {}, settings) {
     const self = this;
     Condition.call(this);
     const DOMAIN = config.get('domain'),
@@ -11,6 +11,7 @@ module.exports = function(name, opts, mappings, settings) {
         INDEX = opts.index,
         TYPE = opts.type;
     let exists, dbMappings;
+    let shardsCount;
     this.sortList = [];
     this.aggsList = [];
     this.sourceList = undefined;
@@ -90,7 +91,6 @@ module.exports = function(name, opts, mappings, settings) {
                 'method': 'POST',
                 'body': JSON.stringify(params)
             });
-            console.log('ret', ret);
         }
     };
 
@@ -125,7 +125,18 @@ module.exports = function(name, opts, mappings, settings) {
         });
     };
 
-
+    const getRandomRouting = async() => {
+        if (!shardsCount) {
+            const url = `${BASE_URL}${INDEX}`;
+            const ret = await request({
+                url,
+                'method': 'GET'
+            });
+            shardsCount = ret[TYPE].settings.index.number_of_shards;
+        }
+        let routing = Math.floor(Math.random() * shardsCount) + 1;
+        return routing;
+    };
 
     this.from = (from) => {
         if (isNaN(from)) {
@@ -206,9 +217,20 @@ module.exports = function(name, opts, mappings, settings) {
         return this;
     };
 
+
     this.create = async(data, id = '') => {
-        const url = `${BASE_URL}${INDEX}/${TYPE}/${id}`;
+        let url = `${BASE_URL}${INDEX}/${TYPE}/${id}?`;
         const reqType = !!id ? 'PUT' : 'POST';
+        let joinList = Object.keys(mappings).filter((key) => {
+            return mappings[key].type === 'join';
+        });
+        const joinFlag = Object.keys(data).some((key) => {
+            return joinList.indexOf(key) >= 0;
+        });
+        if (joinFlag) {
+            let routing = await getRandomRouting();
+            url += 'routing=' + routing;
+        }
         const body = await request({
             url,
             'method': reqType,
