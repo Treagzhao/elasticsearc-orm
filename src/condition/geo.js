@@ -1,7 +1,7 @@
 const Range = require('../esRange.js');
 module.exports = function() {
 
-    this.geoShape = (field, type, coordinates, opts) => {
+    this.geoShape = (field, type, coordinates, opts={}) => {
         if (typeof field !== 'string' || typeof type !== 'string') {
             throw new Error('arguments type error');
         }
@@ -17,7 +17,7 @@ module.exports = function() {
                 [field]: {
                     'shape': {
                         'type': type,
-                        'coordinates': [coordinates]
+                        'coordinates': coordinates
                     },
                     'relation': opts.relation || 'within'
                 }
