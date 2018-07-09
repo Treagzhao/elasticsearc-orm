@@ -1,107 +1,103 @@
-module.exports = function() {
+module.exports = function(name) {
     this.aggsList = [];
     this.agg;
     this.aggCount = 0;
-    this.avg = (name, field, options) => {
+    this.name = name;
+    this.avg = (field, options) => {
         this.agg = {
             'avg': {
-                [name]: {
-                    field
-                }
+                field
             }
         };;
         this.aggCount++;
+        return this;
     };
 
-    this.cardinality = (name, field, options) => {
+    this.getName = () => {
+        return this.name;
+    };
+    this.cardinality = (field, options) => {
         this.agg = {
             'cardinality': {
-                [name]: {
-                    field
-                }
+                field
             }
         };;
         this.aggCount++;
+        return this;
     };
 
-    this.max = (name, field, options) => {
+    this.max = (field, options) => {
         this.agg = {
             'max': {
-                [name]: {
-                    field
-                }
+                field
             }
         };;
         this.aggCount++;
+        return this;
     };
 
-    this.min = (name, field, options) => {
+    this.min = (field, options) => {
         this.agg = {
             'min': {
-                [name]: {
-                    field
-                }
+                field
             }
         };
         this.aggCount++;
+        return this;
     };
 
-    this.sum = (name, field, options) => {
+    this.sum = (field, options) => {
         this.agg = {
             'sum': {
-                [name]: {
-                    field
-                }
+                field
             }
         };;
         this.aggCount++;
+        return this;
     };
 
-    this.valueCount = (name, field, options) => {
+    this.valueCount = (field, options) => {
         this.agg = {
             'value_count': {
-                [name]: {
-                    field
-                }
+                field
             }
         };
         this.aggCount++;
+        return this;
     };
 
-    this.stats = (name, field, options) => {
+    this.stats = (field, options) => {
         this.agg = {
             'stats': {
-                [name]: {
-                    field
-                }
+                field
             }
         };
         this.aggCount++;
+        return this;
     };
 
-    this.percentiles = (name, field, options) => {
+    this.percentiles = (field, options) => {
         this.agg = {
             'percentiles': {
-                [name]: {
-                    field
-                }
+                field
             }
         };
         this.aggCount++;
+        return this;
     };
 
-    this.percentileRanks = (name, field, options) => {
+    this.percentileRanks = (field, options) => {
         this.agg = {
             'percentile_ranks': {
-                [name]: {
-                    field
-                }
+                field
             }
         };
         this.aggCount++;
+        return this;
     };
 
     this.aggValueOf = () => {
-
+        console.log("testtset", JSON.stringify(this.agg));
+        return this.agg;
     };
 };

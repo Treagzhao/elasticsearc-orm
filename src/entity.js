@@ -1,6 +1,7 @@
 const request = require('../util/request.js');
 const config = require('../util/globalConfig.js');
-const Condition = require('./esCondition.js');
+const Condition = require('./esCondition.js'),
+    Aggs = require('./esAggs.js');
 module.exports = function(name, opts, mappings, settings) {
     const self = this;
     Condition.call(this);
@@ -11,6 +12,7 @@ module.exports = function(name, opts, mappings, settings) {
         TYPE = opts.type;
     let exists, dbMappings;
     this.sortList = [];
+    this.aggsList = [];
     this.sourceList = undefined;
     const reset = () => {
         this.mustList = [];
@@ -92,6 +94,14 @@ module.exports = function(name, opts, mappings, settings) {
         }
     };
 
+    const buildAggs = () => {
+        let param = {};
+        this.aggsList.forEach((aggs) => {
+            let name = aggs.getName();
+            param[name] = aggs.aggValueOf();
+        });
+        return param;
+    };
 
     const updateDb = async() => {
         let incremental = {};
@@ -188,6 +198,14 @@ module.exports = function(name, opts, mappings, settings) {
         return this;
     };
 
+    this.aggs = (aggs) => {
+        if (!aggs instanceof Aggs) {
+            throw new Error('arguments type error');
+        }
+        this.aggsList.push(aggs);
+        return this;
+    };
+
     this.create = async(data, id = '') => {
         const url = `${BASE_URL}${INDEX}/${TYPE}/${id}`;
         const reqType = !!id ? 'PUT' : 'POST';
@@ -237,6 +255,9 @@ module.exports = function(name, opts, mappings, settings) {
         if (!!this.sourceList) {
             body['_source'] = this.sourceList;
         }
+        if (this.aggsList.length > 0) {
+            body.aggs = buildAggs();
+        }
         const url = `${BASE_URL}${INDEX}/${TYPE}/_search`;
         let result = await request({
             url,
@@ -259,5 +280,4 @@ module.exports = function(name, opts, mappings, settings) {
     };
     init();
 };
-
 module.exports.prototype = Condition.prototype;
