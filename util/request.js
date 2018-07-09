@@ -13,11 +13,12 @@ module.exports = (opts) => {
     const DEBUG = config.get('debug');
     const log = config.get("log") || console.log;
     initContentType(opts);
+    let logArr = [];
     return new Promise((resolve, reject) => {
         if (DEBUG) {
-            log('----------start');
-            log('url:', opts.url);
-            log('params:', opts.body);
+            logArr.push('----------start');
+            logArr.push('url:' + opts.url);
+            logArr.push('params:' + opts.body);
         }
         request(opts, (err, response, body) => {
             if (err) {
@@ -27,9 +28,10 @@ module.exports = (opts) => {
             try {
                 body = JSON.parse(body);
                 if (DEBUG) {
-                    log('body:', body);
+                    logArr.push('body:' + JSON.stringify(body));
                 }
-                log('----------end');
+                logArr.push('----------end');
+                log(logArr.join('\n'));
                 if (response.statusCode >= 300) {
                     let error = body.result || body.error.reason;
                     reject(new Error(response.statusCode + ": " + error));

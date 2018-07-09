@@ -3,6 +3,7 @@ const request = require('./util/request.js');
 const config = require('./util/globalConfig.js');
 const Entity = require('./src/entity.js');
 const Condition = require('./src/esCondition.js');
+const Range = require('./src/esRange.js');
 const buildVersion = (number) => {
     let list = number.split(',').map((item) => {
         return +item;
@@ -63,5 +64,6 @@ const ES = (opts) => {
     return conn;
 };
 
+ES.Range = Range;
 ES.Condition = Condition;
 module.exports = ES;

@@ -15,7 +15,12 @@ module.exports = function() {
 
     this.valueOf = () => {
         if (this.count === 1 && this.must.length === 1) {
-            return this.must[0];
+            let condition = this.must[0];
+            if (condition instanceof module.exports) {
+
+            } else {
+                return condition;
+            }
         } else {
 
         }

@@ -1,3 +1,4 @@
+let Range = require('../esRange.js');
 module.exports = function() {
     this.term = (field, value) => {
         if (typeof field !== 'string' || value === undefined) {
@@ -34,8 +35,8 @@ module.exports = function() {
         return this;
     }
 
-    this.range = (field, from, to, equalFrom, equalTo) => {
-        if (typeof field !== 'string' || from === undefined || to === undefined) {
+    const rangeByParam = (field, from, to, equalFrom, equalTo) => {
+        if (from === undefined || to === undefined) {
             throw new Error('arguments type error');
         }
         if (from === null && to === null) {
@@ -57,6 +58,32 @@ module.exports = function() {
             'range': param
         });
         return this;
+    };
+
+    const rangeByESRange = (field, range) => {
+        let rangeParam = range.valueOf();
+        if (Object.keys(rangeParam).length == 0) {
+            throw new Error("from and to could not be null both");
+        }
+        let param = {
+            [field]: rangeParam
+        };
+        this.count++;
+        this.must.push({
+            'range': param
+        });
+        return this;
+    }
+
+    this.range = (field, from, to, equalFrom, equalTo) => {
+        if (typeof field !== 'string') {
+            throw new Error('arguments type error');
+        }
+        if (from instanceof Range) {
+            return rangeByESRange(field, from);
+        } else {
+            return rangeByParam(field, from, to, equalFrom, equalTo);
+        }
     };
 
 
