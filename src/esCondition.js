@@ -60,12 +60,18 @@ module.exports = function() {
             let notList = this.notList.map((condition) => {
                 return condition.valueOf();
             });
+            let filterList = this.filterList.map((condition) => {
+                return condition.valueOf();
+            });
             let ret = {};
             if (mustList.length > 0) {
                 ret.must = mustList;
             }
             if (shouldList.length > 0) {
                 ret.should = shouldList;
+            }
+            if (filterList.length > 0) {
+                ret.filter = filterList;
             }
             if (notList.length > 0) {
                 ret.must_not = notList;
@@ -74,5 +80,13 @@ module.exports = function() {
                 'bool': ret
             };
         }
+    };
+
+    this.filter = (condition) => {
+        if (!condition instanceof module.exports) {
+            throw new Error('condition must be an instance of ESCondition');
+        }
+        this.filterList.push(condition);
+        return this;
     };
 }

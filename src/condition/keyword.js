@@ -37,7 +37,7 @@ module.exports = function() {
     }
 
     const rangeByParam = (field, from, to, equalFrom, equalTo) => {
-        if (from === undefined || to === undefined) {
+        if (from === undefined) {
             throw new Error('arguments type error');
         }
         if (from === null && to === null) {

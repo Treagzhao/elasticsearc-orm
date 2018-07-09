@@ -11,7 +11,7 @@ module.exports = function(name, opts, mappings, settings) {
         TYPE = opts.type;
     let exists, dbMappings;
     this.sortList = [];
-    this.sourceList = [];
+    this.sourceList = undefined;
     const reset = () => {
         this.mustList = [];
         this.shouldList = [];
