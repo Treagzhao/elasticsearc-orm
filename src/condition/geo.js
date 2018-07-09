@@ -1,3 +1,4 @@
+const Range = require('../esRange.js');
 module.exports = function() {
 
     this.geoShape = (field, type, coordinates, opts) => {
@@ -48,24 +49,58 @@ module.exports = function() {
         return this;
     }
 
-    this.geoDistanceRange = (field, coordinates, from, to, fromEqual, toEqual) => {
-        if (typeof field !== 'string' || typeof from !== 'string' || typeof to !== 'string') {
+    this.geoPolygon = (field, coordinates) => {
+        if (typeof field !== 'string') {
             throw new Error('arguments type error');
         }
-        if (coordinates.lon === undefined || coordinates.lat === undefined) {
+        if (Object.prototype.toString.call(coordinates).indexOf('Array') < 0) {
             throw new Error('arguments type error');
+        }
+        if (coordinates.length < 3) {
+            throw new Error('coordinates length must be greater than 2');
         }
         this.count++;
         let param = {
-            'geo_distance_range': {
-                from,
-                to,
-                [field]: coordinates
+            'geo_polygon': {
+                [field]: {
+                    'points': coordinates
+                }
             }
-        }
+        };
         this.must.push(param);
         return this;
-    };
+    }
+
+    /**
+     * 这个方法已经在6.3版本里被废弃了
+     **/
+    // this.geoDistanceRange = (field, coordinates, from, to, fromEqual, toEqual) => {
+    //     let param, range;
+    //     if (typeof field !== 'string') {
+    //         throw new Error('arguments type error');
+    //     }
+    //     if (coordinates.lon === undefined || coordinates.lat === undefined) {
+    //         throw new Error('arguments type error');
+    //     }
+    //     if (from instanceof Range) {
+    //         range = from;
+
+    //     } else {
+    //         if (typeof from !== 'string' || typeof to !== 'string') {
+    //             throw new Error('arguments type error');
+    //         }
+    //         range = new Range(from, to, fromEqual, toEqual);
+    //     }
+    //     let rangeParam = range.valueOf();
+    //     rangeParam[field] = coordinates;
+    //     param = {
+    //         'geo_distance_range': rangeParam
+    //     }
+
+    //     this.count++;
+    //     this.must.push(param);
+    //     return this;
+    // };
 
     this.geoBoundingBox = (field, coordinates) => {
         if (typeof field !== 'string') {

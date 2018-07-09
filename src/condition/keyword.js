@@ -23,13 +23,14 @@ module.exports = function() {
     };
 
     this.exists = (field) => {
-        if (typeof field !== 'string') {
+        if (typeof field !== 'string' && Object.prototype.toString.call(field).indexOf('Array') < 0) {
             throw new Error('arguments type error');
         }
+        let key = typeof field === 'string' ? 'field' : 'fields'
         this.count++;
         this.must.push({
             'exists': {
-                'field': field
+                [key]: field
             }
         })
         return this;
