@@ -36,4 +36,17 @@ describe('测试地理位置的 geoPolygon 方法', function() {
             []
         ])).to.equal(condition);
     });
+
+    it('geoPolygon 的参数测试', function() {
+        let condition = new Condition();
+        condition.geoPolygon('location', [
+            [],
+            [],
+            []
+        ]);
+        expect(condition.valueOf()).to.have.property('geo_polygon');
+        expect(condition.valueOf().geo_polygon).to.have.property('location');
+        expect(condition.valueOf().geo_polygon.location).to.have.property('points');
+        expect(condition.valueOf().geo_polygon.location.points).to.have.lengthOf(3);
+    });
 });
