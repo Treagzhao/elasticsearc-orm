@@ -60,6 +60,11 @@ module.exports = function() {
             } else {
                 return condition;
             }
+        }
+        if (this.count == 0) {
+            return {
+                'match_all': {}
+            };
         } else {
             let mustList = this.mustList.map((condition) => {
                 return condition.valueOf();

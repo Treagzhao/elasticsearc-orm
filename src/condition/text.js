@@ -1,6 +1,6 @@
 module.exports = function() {
     this.match = (field, value, opts = {}) => {
-        if (value === undefined) {
+        if (value === undefined || value === null) {
             throw new Error('arguments type error');
         }
         if (typeof field === 'string') {
@@ -29,7 +29,7 @@ module.exports = function() {
     };
 
     this.matchPhrase = (field, value) => {
-        if (typeof field !== 'string' || value === undefined) {
+        if (typeof field !== 'string' || value === undefined || value === null) {
             throw new Error('arguments type error');
         }
         this.count++;

@@ -22,6 +22,9 @@ function Range(from, to, fromEqual, toEqual) {
             let key = !!toEqual ? 'lte' : 'lt';
             obj[key] = to;
         }
+        if (Object.keys(obj).length === 0) {
+            throw new Error('`from` and `to` could not be blank both');
+        }
         return obj;
     }
 
