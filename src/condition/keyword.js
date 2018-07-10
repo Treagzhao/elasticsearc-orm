@@ -37,21 +37,18 @@ module.exports = function() {
     }
 
     const rangeByParam = (field, from, to, equalFrom, equalTo) => {
-        if (from === undefined) {
-            throw new Error('arguments type error');
-        }
-        if (from === null && to === null) {
+        if ((from === undefined && to === undefined) || (from === null && to === null)) {
             throw new Error("from and to could not be null both");
         }
         this.count++;
         let param = {
             [field]: {}
         };
-        if (from !== null) {
+        if (from !== null && from !== undefined) {
             let condition = "gt" + (!!equalFrom ? "e" : "");
             param[field][condition] = from;
         }
-        if (to != null) {
+        if (to != null && to !== undefined) {
             let condition = "lt" + (!!equalTo ? "e" : "");
             param[field][condition] = to;
         }
@@ -121,7 +118,7 @@ module.exports = function() {
 
         this.count++;
         this.mustList.push({
-            'wildcard': {
+            'fuzzy': {
                 [field]: value
             }
         })
