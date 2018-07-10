@@ -18,6 +18,21 @@ module.exports = function(name) {
     };
 
     this.aggValueOf = () => {
+        if (this.aggsList.length > 0) {
+            this.agg.aggs = {};
+            this.aggsList.forEach((agg) => {
+                let name = agg.getName();
+                this.agg.aggs[name] = agg.aggValueOf();
+            });
+        }
         return this.agg;
+    };
+
+    this.aggs = (aggs) => {
+        if (!aggs instanceof module.exports) {
+            throw new Error('aggs must be an instance of Aggs');
+        }
+        this.aggsList.push(aggs);
+        return this;
     };
 };
