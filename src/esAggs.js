@@ -9,7 +9,7 @@ module.exports = function(name) {
     Geo.call(this, name);
     GroupAggs.call(this, name);
     this.aggsList = [];
-    this.agg;
+    this.agg = {};
     this.aggCount = 0;
     this.name = name;
 
