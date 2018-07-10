@@ -38,4 +38,33 @@ module.exports = function(name) {
         return this;
     };
 
+    this.dateHistogram = (field, interval, options = {}) => {
+        if (typeof field !== 'string' || typeof interval !== 'string') {
+            throw new Error('arguments type error');
+        }
+        this.aggCount++;
+        let param = {
+            'date_histogram': {
+                field,
+                interval
+            }
+        };
+        let ordinary = ['format', 'time_zone', 'offset'];
+        ordinary.forEach((key) => {
+            if (options[key]) {
+                param.date_histogram[key] = options[key];
+            }
+        });
+        this.agg = param;
+        return this;
+    };
+
+    this.dateRange = (field, from, to, options = {}) => {
+        if (typeof field !== 'string' || typeof from !== 'string' || typeof to !== 'string') {
+            throw new Error('arguments type error');
+        }
+        this.aggCount++;
+        return this;
+    };
+
 };
