@@ -24,6 +24,9 @@ module.exports = function(name) {
         if (!origin.lon || !origin.lat) {
             throw new Error('origin must be a geoPoint');
         }
+        if (Object.prototype.toString.call(ranges).indexOf("Array") < 0) {
+            throw new Error('ranges must be a list');
+        }
         let flag = ranges.every((item) => {
             return item instanceof Range;
         });

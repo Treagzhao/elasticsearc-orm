@@ -20,7 +20,8 @@ function Connection(opts) {
 
     let testConnection = async() => {
         let body = await request({
-            'url': BASE_URL
+            'url': BASE_URL,
+            'timeout': 5000
         });
         config.set('version', buildVersion(body.version.number));
     };
@@ -44,6 +45,9 @@ function Connection(opts) {
         config.set(key, value);
     };
 
+    this.get = (key) => {
+        return config.get(key);
+    };
 
     connect().then((ret) => {
         config.set('domain', opts.domain);

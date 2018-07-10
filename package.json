@@ -4,7 +4,7 @@
   "description": "This is a orm for elasticSearch",
   "main": "es.js",
   "scripts": {
-    "test": "mocha test --recursive"
+    "test": "mocha test --recursive --timeout 10000"
   },
   "repository": {
     "type": "git",

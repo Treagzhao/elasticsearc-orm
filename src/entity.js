@@ -107,8 +107,6 @@ module.exports = function(name, opts, mappings = {}, settings) {
         let incremental = {};
         if (mappings && dbMappings) {
             Object.keys(mappings).filter((key) => {
-                console.log('key', key, dbMappings);
-
                 return !dbMappings.hasOwnProperty(key);
             }).forEach((key) => {
                 incremental[key] = mappings[key];
@@ -232,7 +230,19 @@ module.exports = function(name, opts, mappings = {}, settings) {
         let url = `${BASE_URL}${INDEX}/${TYPE}/${id}?`;
         const reqType = !!id ? 'PUT' : 'POST';
         const joinFlag = getJoinFlag(data);
-        if (joinFlag) {
+        if (!!id) {
+            let exists = false;
+            try {
+                let info = await this.get(id);
+                exists = true;
+            } catch (e) {
+                exists = false;
+            };
+            if (exists) {
+                throw new Error('id is exists');
+            }
+        }
+        if (joinFlag || !!routing) {
             if (!routing) {
                 let routing = await getRandomRouting();
             }

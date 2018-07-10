@@ -32,7 +32,10 @@ module.exports = (opts) => {
                     logArr.push('----------end');
                     log(logArr.join('\n'));
                 }
-                if (response.statusCode >= 300) {
+                if (response.statusCode === 404) {
+                    let error = "Not Found";
+                    reject(new Error(response.statusCode + ": " + error));
+                } else if (response.statusCode >= 300) {
                     let error = body.result || body.error.reason;
                     reject(new Error(response.statusCode + ": " + error));
                 } else {
