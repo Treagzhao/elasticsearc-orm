@@ -83,7 +83,7 @@ module.exports = function(name) {
         let ordinary = ['format'];
         ordinary.forEach((key) => {
             if (options[key]) {
-                param.date_histogram[key] = options[key];
+                param.date_range[key] = options[key];
             }
         });
         this.agg = param;
@@ -115,7 +115,7 @@ module.exports = function(name) {
         if (typeof field !== 'string') {
             throw new Error('arguments type error');
         }
-        if (!condition instanceof Condition) {
+        if (!(condition instanceof Condition)) {
             throw new Error('condition must be an instance of ESCondition');
         }
         this.aggCount++;
@@ -149,7 +149,7 @@ module.exports = function(name) {
         let ordinary = ['max_doc_per_value'];
         ordinary.forEach((key) => {
             if (options[key] !== undefined) {
-                param.date_histogram[key] = options[key];
+                param.sampler[key] = options[key];
             }
         });
         this.agg = param;
