@@ -1,7 +1,7 @@
 const Range = require('../esRange.js');
 module.exports = function() {
 
-    this.geoShape = (field, type, coordinates, opts={}) => {
+    this.geoShape = (field, type, coordinates, opts = {}) => {
         if (typeof field !== 'string' || typeof type !== 'string') {
             throw new Error('arguments type error');
         }
@@ -9,7 +9,7 @@ module.exports = function() {
             throw new Error('arguments type error');
         }
         if (type === 'circle' && !opts.radius) {
-            throw new Error('arguments type error');
+            throw new Error('radius of Circle must be a positive integer');
         }
         this.count++;
         let param = {
