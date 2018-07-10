@@ -44,6 +44,14 @@ module.exports = function() {
         return this;
     };
 
+    this.matchAll = () => {
+        this.mustList.push({
+            'match_all': {}
+        });
+        this.count++;
+        return this;
+    };
+
     this.valueOf = () => {
         if (this.count === 1 && this.mustList.length === 1) {
             let condition = this.mustList[0];

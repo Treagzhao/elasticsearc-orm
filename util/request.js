@@ -29,9 +29,9 @@ module.exports = (opts) => {
                 body = JSON.parse(body);
                 if (DEBUG) {
                     logArr.push('body:' + JSON.stringify(body));
+                    logArr.push('----------end');
+                    log(logArr.join('\n'));
                 }
-                logArr.push('----------end');
-                log(logArr.join('\n'));
                 if (response.statusCode >= 300) {
                     let error = body.result || body.error.reason;
                     reject(new Error(response.statusCode + ": " + error));

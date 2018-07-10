@@ -1,3 +1,4 @@
+const Range = require('../esRange.js');
 module.exports = function(name) {
     this.geoBounds = (field, options = {}) => {
         if (typeof field !== 'string') {
@@ -13,6 +14,30 @@ module.exports = function(name) {
         }
         this.agg = param;
         this.aggCount++;
+        return this;
+    };
+
+    this.geoDistance = (field, origin, ranges, options = {}) => {
+        if (typeof field !== 'string' || !ranges) {
+            throw new Error('arguments type error');
+        }
+        if (!origin.lon || !origin.lat) {
+            throw new Error('origin must be a geoPoint');
+        }
+        let flag = ranges.every((item) => {
+            return item instanceof Range;
+        });
+        if (!flag) {
+            throw new Error('ranges must be a list of ESRange');
+        }
+        this.aggCount++;
+        this.agg = {
+            'geo_distance': {
+                field,
+                origin,
+                'ranges': ranges.map((item) => { return item.fromToValue() })
+            }
+        };
         return this;
     };
 
