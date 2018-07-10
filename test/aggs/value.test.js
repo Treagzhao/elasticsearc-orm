@@ -9,6 +9,8 @@ describe('基本数值型聚合测试', function() {
                 aggs[method]();
             }).to.throw(Error);
             aggs = new Aggs('name');
+            expect(aggs[method]('field')).to.equal(aggs);
+            aggs = new Aggs('name');
             expect(function() {
                 aggs[method]('field')
             }).to.not.throw(Error);

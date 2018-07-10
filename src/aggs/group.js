@@ -16,12 +16,12 @@ module.exports = function(name) {
             if (type !== 'asc' && type !== 'desc') {
                 throw new Error('order type must be on of `asc` or `desc`');
             }
-            params.order = {
+            params.terms.order = {
                 [options.order.field]: options.order.type
             };
         }
         if (options.size) {
-            params.size = options.size;
+            params.terms.size = options.size;
         }
         this.agg = params;
         return this;
