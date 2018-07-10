@@ -75,9 +75,7 @@ module.exports = function() {
             let notList = this.notList.map((condition) => {
                 return condition.valueOf();
             });
-            let filterList = this.filterList.map((condition) => {
-                return condition.valueOf();
-            });
+            let filterList = this.filterList;
             let ret = {};
             if (mustList.length > 0) {
                 ret.must = mustList;
@@ -86,7 +84,15 @@ module.exports = function() {
                 ret.should = shouldList;
             }
             if (filterList.length > 0) {
-                ret.filter = filterList;
+                if (filterList.length === 1) {
+                    ret.filter = filterList[0].valueOf();
+                } else {
+                    let condition = new module.exports();
+                    filterList.forEach(function(item) {
+                        condition.must(item)
+                    });
+                    ret.filter = condition.valueOf();
+                }
             }
             if (notList.length > 0) {
                 ret.must_not = notList;
@@ -105,6 +111,7 @@ module.exports = function() {
         if (!condition instanceof module.exports) {
             throw new Error('condition must be an instance of ESCondition');
         }
+        this.count++;
         this.filterList.push(condition);
         return this;
     };
