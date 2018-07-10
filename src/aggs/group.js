@@ -23,4 +23,19 @@ module.exports = function(name) {
         return this;
     };
 
+    this.histogram = (field, interval) => {
+        if (typeof field !== 'string' || typeof interval !== 'number' || interval <= 0) {
+            throw new Error('arguments type error');
+        }
+        this.aggCount++;
+        let param = {
+            'histogram': {
+                field,
+                interval
+            }
+        };
+        this.agg = param;
+        return this;
+    };
+
 };

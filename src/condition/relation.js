@@ -34,4 +34,18 @@ module.exports = function() {
         this.mustList.push(param);
         return this;
     };
+    this.parentId = (parentId, type) => {
+        if (parentId === undefined || typeof type !== 'string') {
+            throw new Error('arguments type error');
+        }
+        this.count++;
+        let param = {
+            'parent_id': {
+                type,
+                'id': parentId
+            }
+        };
+        this.mustList.push(param);
+        return this;
+    };
 };

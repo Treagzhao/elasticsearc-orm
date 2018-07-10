@@ -203,6 +203,16 @@ module.exports = function(name, opts, mappings = {}, settings) {
         return this;
     }
 
+    const getJoinFlag = (data) => {
+        let joinList = Object.keys(mappings).filter((key) => {
+            return mappings[key].type === 'join';
+        });
+        const joinFlag = Object.keys(data).some((key) => {
+            return joinList.indexOf(key) >= 0;
+        });
+        return joinFlag;
+    };
+
     this.source = (sources) => {
         this.sourceList = sources;
 
@@ -218,17 +228,14 @@ module.exports = function(name, opts, mappings = {}, settings) {
     };
 
 
-    this.create = async(data, id = '') => {
+    this.create = async(data, id = '', routing) => {
         let url = `${BASE_URL}${INDEX}/${TYPE}/${id}?`;
         const reqType = !!id ? 'PUT' : 'POST';
-        let joinList = Object.keys(mappings).filter((key) => {
-            return mappings[key].type === 'join';
-        });
-        const joinFlag = Object.keys(data).some((key) => {
-            return joinList.indexOf(key) >= 0;
-        });
+        const joinFlag = getJoinFlag(data);
         if (joinFlag) {
-            let routing = await getRandomRouting();
+            if (!routing) {
+                let routing = await getRandomRouting();
+            }
             url += 'routing=' + routing;
         }
         const body = await request({
@@ -239,8 +246,15 @@ module.exports = function(name, opts, mappings = {}, settings) {
         return body._id
     }
 
-    this.update = async(id, data) => {
-        const url = `${BASE_URL}${INDEX}/${TYPE}/${id}`;
+    this.update = async(id, data, routing) => {
+        const joinFlag = getJoinFlag(data);
+        let url = `${BASE_URL}${INDEX}/${TYPE}/${id}`;
+        if (joinFlag) {
+            if (!routing) {
+                let routing = await getRandomRouting();
+            }
+            url += '?routing=' + routing;
+        }
         const body = await request({
             url,
             'method': 'PUT',
