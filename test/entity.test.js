@@ -111,4 +111,86 @@ describe('文档相关功能测试', function() {
             done(e);
         });
     });
+
+
+    it('更新一个文档', function(done) {
+        (async() => {
+            let testType = await getEntity();
+            let random = Math.floor(Math.random() * 50);
+            await testType.update('testId', {
+                'age': random,
+                'name': "Treagzhao",
+                'description': "The most handsome guy in the world",
+                'birthday': +new Date(),
+                'home': {
+                    'lon': 166.12123,
+                    'lat': 43.234
+                }
+            });
+            let info = await testType.get('testId');
+            return info.data.age === random;
+        })().then((flag) => {
+            expect(flag).to.be.true;
+            done();
+        }).catch((e) => {
+            done(e);
+        });
+    });
+
+    it('删除一个文档', function(done) {
+        (async() => {
+            let testType = await getEntity();
+            let id = await testType.create({
+                'age': 34,
+                'name': "Treagzhao",
+                'description': "The most handsome guy in the world",
+                'birthday': +new Date(),
+                'home': {
+                    'lon': 166.12123,
+                    'lat': 43.234
+                }
+            });
+            let existsFlag, deletedFlag;
+            try {
+                await testType.get(id);
+                existsFlag = true;
+            } catch (e) {
+                existsFlag = false;
+            }
+            await testType.delete(id);
+            try {
+                await testType.get(id);
+                deletedFlag = true;
+            } catch (e) {
+                deletedFlag = false;
+            }
+            return existsFlag && !deletedFlag;
+        })().then((flag) => {
+            expect(flag).to.be.true;
+            done();
+        }).catch((e) => {
+            done(e);
+        });
+    });
+
+    it('获取一个不存在的文档', function(done) {
+        (async() => {
+            let testType = await getEntity();
+            let info = await testType.get('notexists');
+        })().then((e) => {
+            done(new Error("get info fail"));
+        }).catch((e) => {
+            done();
+        });
+    });
+    it('获取一个存在的文档', function(done) {
+        (async() => {
+            let testType = await getEntity();
+            let info = await testType.get('testId');
+        })().then((e) => {
+            done();
+        }).catch((e) => {
+            done(e);
+        });
+    });
 });
