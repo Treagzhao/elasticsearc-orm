@@ -29,6 +29,11 @@ describe('地理位置的geoDistance 的测试', function() {
                 'lat': 2
             }, '100m')
         }).to.not.throw(Error);
+        condition = new Condition();
+        expect(condition.geoDistance('location', {
+            'lon': 100,
+            'lat': 10
+        }, '100m')).to.equal(condition);
     });
     it('geoDistance 的参数测试', function() {
         let condition = new Condition();
