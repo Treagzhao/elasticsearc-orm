@@ -242,4 +242,4 @@ let ret = await demoIndex
 ```js
 request.get('http://google.com/img.png').pipe(request.put('http://mysite.com/img.png'))
 ```
-### 查询API
+## 查询API
