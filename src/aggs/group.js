@@ -157,6 +157,21 @@ module.exports = function(name) {
         return this;
     };
 
+
+    this.children = (childrenType) => {
+        if (typeof childrenType !== 'string') {
+            throw new Error('arguments type error');
+        }
+        let param = {
+            'children': {
+                'type': childrenType
+            }
+        };
+        this.agg = param;
+        this.aggCount++;
+        return this;
+    };
+
     this.significantTerms = (field) => {
         if (typeof field !== 'string') {
             throw new Error('arguments type error');
