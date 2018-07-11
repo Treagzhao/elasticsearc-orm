@@ -1,11 +1,16 @@
 {
   "name": "elasticsearch-orm",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "This is a orm for elasticSearch",
   "main": "es.js",
   "scripts": {
     "test": "mocha --recursive --timeout 7000 test"
   },
+  "keywords": [
+    "es",
+    "elasticSearch",
+    "orm"
+  ],
   "repository": {
     "type": "git",
     "url": "git@code.byted.org:tetris/zhaoxuebin_test.git"
