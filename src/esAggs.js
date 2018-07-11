@@ -36,3 +36,6 @@ module.exports = function(name) {
         return this;
     };
 };
+
+let i = new module.exports('a');
+console.log(i);

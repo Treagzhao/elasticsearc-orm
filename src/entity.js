@@ -130,7 +130,9 @@ module.exports = function(name, opts, mappings = {}, settings) {
                 url,
                 'method': 'GET'
             });
-            shardsCount = ret[TYPE].settings.index.number_of_shards;
+            if (ret[INDEX].settings) {
+                shardsCount = ret[INDEX].settings.index.number_of_shards;
+            }
         }
         let routing = Math.floor(Math.random() * shardsCount) + 1;
         return routing;
@@ -243,8 +245,9 @@ module.exports = function(name, opts, mappings = {}, settings) {
             }
         }
         if (joinFlag || !!routing) {
+            let routing;
             if (!routing) {
-                let routing = await getRandomRouting();
+                routing = await getRandomRouting();
             }
             url += 'routing=' + routing;
         }

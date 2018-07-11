@@ -1,333 +1,670 @@
-# Elasticsearch Orm
-这个是一个针对于Elasticsearch的Orm框架，通过一些基本的api，来实现增删改查，后续功能有待完善。敬请期待。
-## 开始
-```javascript
-	var ESOrm = require("elasticsearch-orm");
-	var esInstance = new ESOrm({
-		"domain":"127.0.0.1",
-		"port":"9200"
-	});
+
+# elasticsearch-orm - 一个基本的 Elasticsearch 的 查询 API
+
+[![npm package](https://nodei.co/npm/elasticsearch-orm.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/elasticsearch-orm/)
+
+## 安装
+
+```bash
+  npm install elasticsearch-orm
 ```
 
-## node支持版本
-node 6.0.0+
+## 目录
 
-## 主要功能
-1. 连接ES库
-2. 注册ES索引和类型
-3. 对数据进行增删改查
+- [创建连接](#创建连接)
+- [索引相关](#索引相关)
+- [文档相关](#文档相关)
+- [查询相关](#查询相关)
+- [使用聚合](#使用聚合)
+- [分页相关](#分页相关)
+- [设置](#设置)
+- [查询API](#查询API)
+- [聚合API](#聚合API)
 
-## 使用文档
-### 注册索引和类型
-通过`register`方法，可以注册一个跟索引和类型绑定的Entity实例
-```javascript
-var TestType =	esInstance.register("testtype",{
-	"index":"yourindex",
-	"type":"yourtype"
-});
-```
-在注册索引和类型的时候，可以传入这个类型的映射关系
-```javascript
-var TestType = esInstance.register("testtype",{
-	"index":"yourindex",
-	"type":"yourtype"
-},{
-	"name":{"type":"string"},
-	"age":{"type":"long"},
-	"birthday":{"type":"date"},
-	"userId":{"type":"string","index":"not_analyzed"}
-});
-```
-当传入了索引的映射类型后，orm会自动检测index和type有没有建立，如果没有建立，就会自动按照指定的配置创建映射。如果没有传入映射关系，orm就不会执行自动创建。
-```javascript
-esInstance.register("testtype",{
-	"index":"yourindex",
-	"type":"yourtype"
-},{
-	"name":{"type":"string"},
-	"age":{"type":"long"},
-	"birthday":{"type":"date"},
-	"userId":{"type":"string","index":"not_analyzed"}
-}).ready(() => {
-	console.log('ready');
-});
-```
-### 获取Entity实例
-除了通过`register`的方法返回值获取Entity实例，也可以在orm的`entities`里面通过key来获取实例。
-```javascript
-	var TestType = esInstance.entities['testtype'];
-```
-### 插入一条文档
-```javascript
-	TestType.create({
-		'name':"Treagzhao",
-		"age":18,
-		'userId':'xsdf9012xf',
-		'birtyDate':new Date()
-	},(err,result,orgResult) => {
-		console.log('插入成功');
-	});
-```
-### 更新一条文档
-```javascript
-	TestType.update(id,{
-		'name':"New Name":
-		"age":100,
-		"birthday":new Date()
-	},(err,result,orgResult) => {
-		console.log("更新成功");
-	});
-```
-### 删除一条文档
-```javascript
-	TestType.delete(id,(err,result,orgResult) => {
-		console.log("更新成功");
-	});
-```
-### 获取一条文档
-```javascript
-	TestType.get(id,(err,result,orgResult)=>{
-		console.log(result);
-	});
-```
-### 查询
-#### 基本查询
-```javascript
-TestType.find({
-		'userId':'userId1'
-}).run((err,list,orgResult) => {
-		console.log(list);
-});
-```
-查询的返回值有两个，一个是`list`，另一个是`orgResult`，分别对应着提取之后的列表信息，和原始数据。
+---
 
-list:
-```json
-[
-    {
-        "name": "Treagzhao",
-        "age": 18,
-        "userId": "e9jud46niso",
-        "createDate": "2017-09-26T08:28:32.441Z",
-		"id":"AV69TUk8gw-LyrZU-U1H"
+
+## 创建连接
+
+```js
+  const orm = require('elasticsearch-orm');
+  const instance = orm({
+      'domain':'127.0.0.1',
+      'port':9200
+  });
+
+  instance.on('connected',() =>{
+      console.log('连接成功');
+  });
+
+  instance.on('error',(e) =>{
+    console.log('连接异常',e);
+  });
+```
+## 索引相关
+
+### 创建一个索引
+
+生成一个索引类型
+
+```js
+  
+  const demoIndex = instance.register('demoIndex',{
+      'index':'demoindex',
+      'type':'demotype'
+    },{
+        'title':{
+            'type':'text'
+        },
+        'age':{
+            'type':'integer'
+        },
+        'location':{
+            'type':'geo_point'
+        }
+      },{
+        'number_of_shards': 2,
+        'number_of_replicas': 4
+      });
+
+```
+同步索引：如果索引还未被创建，就会按照 mappings 和 settings `创建`索引，如果索引已经创建，则会自动判断哪些 mappings 是新增的，并将这些新增的 mappings `添加`到索引中。sync 方法返回一个 Promise 对象，所以可以使用 await 关键字。
+
+
+```js
+   await demoIndex.sync();
+```
+
+## 文档相关
+### 创建文档
+create 方法返回一个 Promise 对象，可以使用 await 关键字，最终返回新建的文档 ID
+```js
+let id = await demoIndex.create({
+    'title':'Demo Title',
+    'age',12,
+    'location':{
+      'lon':100.1,
+      'lat':40.2
     }
-]
+  });
 ```
 
-orgResult:
+指定文档 ID 创建文档
+```js
+  await demoIndex.create({
+    'title':'Demo Title',
+    'age',12,
+    'location':{
+      'lon':100.1,
+      'lat':40.2
+    }
+  },'document_id');
+```
+指定文档 routing 
+```js
+  await demoIndex.create({
+    'title':'Demo Title',
+    'age',12,
+    'location':{
+      'lon':100.1,
+      'lat':40.2
+    }
+  },'document_id','routing_hash');
+```
+### 更新文档
+```js
+  await demoIndex.update('docuemnt_id',{
+    'title':"Demo Title 2",
+    'age':13
+  })
+```
+指定文档 routing
+```js
+  await demoIndex.update('document_id',{
+    'title':'Demo Title 2',
+    'age':14
+    },'routing_hash')
+```
+### 删除文档
+```js
+  await demoIndex.delete(id);
+```
+### 通过 id 获取文档 
+如果 id 不存在，会返回一个 Error
+```js
+  let doc = await demoIndex.get(id);
+```
+
+## 查询相关
+### 构建简单查询
+```js
+    let ret = await demoIndex.query();
+```
+ret 对象返回连个子对象，一个是list，是将结果提取好的_source 数组，另一个是 orgResult，是 es 返回的原始内容
+### 查询条件
+单一查询条件，全部查询条件列表请参看 [查询 API](#查询API)
+```js
+  let ret = await demoIndex.term('age',12).query();
+```
+多查询条件
+```js
+  let ret = await demoIndex.term('age',12).match('title','')
+```
+must,should,not 查询
+```js
+  const Condition = require("elasticsearch-orm").Condition;
+  let ret = await demoIndex
+    .must(new Condition().term('age',12))
+    .should(new Condition().match('title','Tiel'))
+    .not(new Condition().exists('age'))
+    .query();
+
+```
+filter 查询
+```js
+  const Condition = require("elasticsearch-orm").Condition;
+  let ret = await demoIndex
+            .filter(new Condition().matchAll())
+            .query();
+```
+### 构建嵌套查询
+```js
+const Condition = require("elasticsearch-orm").Condition;
+let condition = new Condition();
+condition.term('age',12).match('title','Title').not(new Conditio().range('age',0,10));
+let ret = await demoIndex
+    .should(condition)
+    .exists('location')
+    .query();
+```
+
+## 使用聚合
+### 使用基本聚合
+通过 orgResult 对象的原始返回值，可以拿到聚合的结果，完整的聚合 API 请参看 [聚合 API](#聚合API)
+```js
+  const Aggs = require('elasticsearch-orm').Aggs;
+  let ret = await demoIndex
+      .exist('age')
+      .aggs(new Aggs('avg_age').avg(age))
+      .query();
+```
+### 聚合的子聚合
+```js
+  const Aggs = require('elasticsearch-orm').Aggs;
+  let aggs = new Aggs('test_aggs').terms('title');
+  aggs.aggs(new Aggs('sub_aggs').valueCount('age'));
+  let ret = await demoIndex
+      .exist('age')
+      .aggs(aggs)
+      .query();
+```
+## 分页相关
+### 分页
+```js
+  let ret = await demoIndex
+      .from(0)
+      .size(15)
+      .query();
+```
+### 排序
+```js
+  let ret = await demoIndex
+      .sort('age','asc')
+      .sort('title','asc','min')
+      .query();
+```
+或者
+```js
+  let ret = await demoIndex
+      .sort({
+          'age':{
+              'order':'desc',
+              'mode':'min'
+          }
+      })
+      .query();
+```
+## 设置
+如果设置了 debug 为 true，则每次请求的请求体和、url和返回值都会被打印出来
+```js
+  let instance = orm({
+    'domain':'127.0.0.1',
+    'port':9200
+  });
+  instance.set("debug",true);
+```
+可以设置 debug 的方法
+```js
+  instance.set("log",console.log);
+```
+```js
+request.get('http://google.com/img.png').pipe(request.put('http://mysite.com/img.png'))
+```
+## 查询API
+### 文本匹配
+#### match 查询
+```js
+  let condition = new Condition();
+  condition.match('title','content1 content2');
+  condition.match('title','content1 content2',{
+    'operator':'and'
+    });
+```
+生成的查询json 为
+```json
+  {
+    "match":{
+        "title":"content1 content2",
+        "operator":"and"
+    }
+  }
+```
+field 参数可以是数组
+```js
+  condition.match(['title','description'],'content1 content2');
+  condition.match(['title','description'],'content1 content2',{
+      'type':'best_fields'
+    });
+```
+生成的查询 json 为
+```json
+  {
+    "multi_match":{
+        "query":"content1 content2",
+        "type":"best_fields",
+        "fields":["title","description"]
+    }
+  }
+```
+#### 短语查询 matchPhrase 和 matchPhrasePrefix
+```js
+condition.matchPhrase('title','content1 content2');
+condition.matchPrasePrefix('title','content1 content2');
+condition.matchPhrase('title','content1 content2',{
+  'analyzer':'test_analyzer'
+  });
+```
+生成查询 json
+```json
+  {
+    "match_phrase":{
+      "title":{
+        "query":"content1 content2",
+        "analyzer":"test_analyzer"
+      }
+    }
+  }
+  {
+    "match_phrase_prefix":{
+      "title":{
+        "query":"content1 content2"
+      }
+    }
+  }
+```
+### 精确值
+#### term 查询
+```js
+condition.term('age',13);
+condition.term('age',[13,15]);
+```
+生成查询 json
+```json
+  {
+    "term":{
+        "age":13
+    }
+  }
+  {
+    "terms":{
+        "age":[13,15]
+    }
+  }
+```
+#### exists 查询
+```js
+condition.exists('age');
+condition.exists(['age','title']);
+```
+生成json
 ```json
 {
-    "took": 2,
-    "timed_out": false,
-    "_shards": {
-        "total": 5,
-        "successful": 5,
-        "failed": 0
-    },
-    "hits": {
-        "total": 1,
-        "max_score": null,
-        "hits": [
-            {
-                "_index": "testindex",
-                "_type": "testtype",
-                "_id": "AV69TUk8gw-LyrZU-U1H",
-                "_score": null,
-                "_source": {
-                    "name": "Treagzhao",
-        			"age": 18,
-        			"userId": "e9jud46niso",
-        			"createDate": "2017-09-26T08:28:32.441Z"
-                },
-                "sort": [
-                    1506414512441
-                ]
-            }
-        ]
-    }
+  "exists":{
+    "field":"age"
+  }
+}
+{
+  "exists":{
+    "fields":["age","title"]
+  }
 }
 ```
-#### 获取数量
-```javascript
-TestType.find({
-	'age':13
-}).count((err,result,org) => {
-	console.log(result);
-});
+#### range 查询
+```js
+condition.range('age',1);
+condition.range('age',1,10);
+condition.range('age',null,10);
+condition.range('age',1,10,true,false);
 ```
-#### 匹配查询
-单个字段匹配查询
-```javascript
-TestType.find({}).match("内容","name").run((err,list,org) => {
-	console.log(list);
-});
+生成json
+```json
+  {
+    "range":{
+        "age":{
+            "gt":1
+        }
+    }
+  }
+  {
+    "range":{
+        "age":{
+            "gt":1,
+            "lt":10
+        }
+    }
+  }
+  {
+    "range":{
+        "age":{
+            "lt":10
+        }
+    }
+  }
+  {
+    "range":{
+        "age":{
+            "gte":1,
+            "lt":10
+        }
+    }
+  }
 ```
-多字段匹配查询
-```javascript
-TestType.find({}).match("内容",["name","userId"]).run((err,list,org) => {
-	console.log(list);
-});
+使用 Range 对象
+```js
+const Range = require('elasticsearch-orm').Range();
+let range = new Range(1);
+range = new Range(1,10);
+range = new Range(1,10,false,true);
+range = new Range().gt(1,true).lt(10,false);
+condition.range(range);
 ```
-多组内容查询
-```javascript
-TestType.find({}).matchPhrase("内容1 内容2","name").run((err,list,org) => {
-	console.log(list);
-});
+#### prefix、wildcard 和fuzzy
+```js
+condition.prefix('title','Tre');
+condition.wildcard('title','Tre*hao');
+condition.fuzzy('title',{
+  'value':'ki',
+  'boost':1.0
+})
 ```
-改变查询逻辑
-```javascript
-TestType.find({}).match("name1","name",ESOrm.TYPE_OR).run((err,list)=>{
-	console.log(list);
-});
+生成 json 文件
+```json
+{
+  "prefix":{
+    "title":"Tre"
+  }
+}
+{
+  "wildcard":{
+    "title":"Tre*hao"
+  }
+}
+{
+  "fuzzy":{
+    "title":{
+        "value":"ki",
+        "boost":1.0
+    }
+  }
+}
+```
+### 地理位置查询
+#### geoShape
+```js
+condition.geoShape('location','circle',
+  [{
+  'lon':100.0,
+  'lat':41.0
+  }],
+  {
+    'radius':"100m",
+    "relation":"within"
+    })
+```
+生成json
+```json
+  {
+    "geo_shape":{
+        "location":{
+            "shape":{
+              "type":"circle",
+              "coordinates":[{
+                "lon":100.0,
+                "lat":41.0
+              }],
+              "relation":"within"
+            }
+        }
+    }
+  }
+```
+#### geoDistance
+```js
+  condition.geoDistance('location',{
+    'lon':100.0,
+    'lat':31.0
+    },'100m');
+```
+生成 json
+```json
+  {
+    "geo_distance":{
+      "distance":"100m",
+      "location":{
+        "lon":100.0,
+        "lat":31.0
+      }
+    }
+  }
+```
+#### geoPolygon
+```js
+condition.geoPolygon('location',[{
+  'lon':100.0,
+  'lat':41.1
+  },{
+    'lon':101.0,
+    'lat':42.1
+    },{
+      'lot':102.3,
+      'lat':42.4
+      }])
+```
+生成 json
+```json
+{
+  "geo_polygon":{
+      "location":{
+          "points":[{
+                  "lon":100.0,
+                  "lat":41.1
+                },{
+                  "lon":101.0,
+                  "lat":42.1
+                },{
+                  "lot":102.3,
+                  "lat":42.4
+                }]
+      }
+  }
+}
+```
+#### geoBoundingBox
+```js
+  condition.geoBoundingBox('location',{
+    'top_left':{
+        'lon':100.1,
+        'lat':31.3
+    },
+    'bottom_right':{
+      'lon':100.3,
+      'lat':32.1
+    }
+    });
+```
+生成 json
+```json
+{
+  "geo_bounding_box":{
+    "location":{
+        "top_left":{
+          "lon":100.0,
+          "lat":31.3
+        },
+        "bottom_right":{
+          "lon":103.3,
+          "lat":31.3
+        }
+    }
+  }
+}
+```
+### 关系查询
+#### hasParent
+```js
+  condition.hasParent('parentType',new Condition().matchAll(),{
+    'score':1
+    });
+```
+生成 json
+```json
+  {
+    "has_parent":{
+      "parent_type":"parentType",
+      "query":{
+          "match_all":{}
+      }
+    }
+  }
+```
+#### hasChild
+```js
+  condition.hasChild('childType',new Condition().matchAll(),{
+    'min_children':10
+    });
+```
+生成 json
+```json
+  {
+    "has_child":{
+      "type":"childType",
+      "query":{
+        "match_all":{}
+      }
+    }
+  }
+```
+#### parentId
+```js
+condition.parentId('parent_id_1','type');
+```
+生成 json
+```json
+{
+  "parent_id":{
+    "type":"type",
+    "id":"parent_id_1"
+  }
+}
 ```
 
-#### 分页
-```javascript
-TestType.find({}).offset(0).size(100).run((err,list,org) => {
-	console.log(list);
-});
-```
-#### 排序
-通过在字段名前加* - *来倒序排列
-```javascript
-TestType.find({}).order("createDate").run((err,list,org) => {
-	console.log(list);
-});
-TestType.find({}).order("-createDate").run((err,list,org) => {
-	console.log(list);
-});
-```
-#### 指定返回字段
-```javascript
-TestType.find({}).source(['age','name']).run((err,list) => {
-	console.log(list);
-});
-```
-这个 list 返回值只包括age和name两个字段
-
-#### 范围查询
-`between` 方法的第二个参数必须是长度为2的数组
-```javascript
-TestType.find({}).between("age",[1,30]).run((err,list,org) => {
-	console.log(list);
-});
-// 第3、4个参数可以决定开闭区间，true为闭区间，false为开区间
-TestType.find({}).between("age",[1,30],true,false).run((err,list,org) => {
-	console.log(list);
-});
-```
-```javascript
-TestType.find({}).gt(1,"age",true).run((err,list,org) => {
-	console.log(list);
-});
-```
-```javascript
-TestType.find({}).lt(100,"age").run((err,list,org) => {
-	console.log(list);
-});
-```
-
-如果想要改变这个参数的查询逻辑，可以传入逻辑参数
-```javascript
-TestType.find({}).between("age",[1,30],true,true,ESOrm.TYPE_OR).run((err,list) =>{
-	console.log(list);
-	//这个查询条件会加入到 should 中
-});
-
-TestType.find({}).bewteen("age",[1,30],true,true,ESOrm.TYPE_NOT).run((err,list) => {
-	console.log(list);
-	//这个查询调价会加入到 not 中 
-});
-
-TestType.find({}).gt(1,"age",true,ESOrm.TYPE_OR).run((err,list,org) => {
-	console.log(list);
-});
-TestType.find({}).lt(1,"age",true,ESOrm.TYPE_NOT).run((err,list,org) => {
-	console.log(list);
-});
-```
-
-还可以通过find来进行范围查询
-```javascript
-TestType.find({
-	'age':ESOrm.between(1,30)
-}).run((err,list,org) => {
-	console.log(list);
-});
-```
-
-### Find查询语句
-```javascript
-TestType.find({
-	"age":ESOrm.between(1,30),  //ESOrm.between(1,30,true,true) 可以查询闭区间
-	'age':ESOrm.gt(1),  //ESOrm.gt(1,true) 可以查询闭区间
-	'age':ESOrm.lt(10),  //ESOrm.lt(1,true) 可以查询闭区间
-	'age':ESOrm.or(13)
-}).run((err,list,org) => {
-	console.log(list);
-});
-```
-
-### 使用聚合
-使用groupBy可以获得分组信息，其中第一个参数是需要分组的字段名称，第二个参数是显示名称
-```javascript
-TestType.find({}).groupBy("type","type1").run((err,result,org) => {
-	console.log(list)
-});
-```
-可以同时对两个不同的内容进行聚合
-```javascript
-TestType.find({}).groupBy("type","type1").groupBy("age","age").run((err,result,org) => {
-	console.log(list)
-});
-```
-
-### 使用滚动
-发起滚动
-```javascript
-TestType.find({}).size(100).scroll().run((err,list,org) => {
-	//如果调用了scroll方法，则org里面会返回一个_scroll_id
-	console.log(org);
-});
-```
-获取下一批数据， scrollId 传入上一个请求返回的 scrollId
-```javascript
-TestType.find({}).scroll(scrollId).run((err, list, org) => {
-	//这个时候的 list 就是 滚动之后的下一批数据 ,而org里面会返回下一步的_scroll_id
-	console.log(list,org);
-});
-```
-
-## 多层嵌套的逻辑查询
-建立一个逻辑查询
-```javascript
-var boolQuery = new ES.BoolQuery({
-    age:1
-}).gt(10,"age",true,ES.TYPE_OR);
-```
-将新建立的逻辑查询加入到原有的查询中
-
-```javascript
-TestType.find({}).matchPhrase("赵","name").addBoolQuery(boolQuery,ES.TYPE_MUST).run((err,list,org) =>{
-    console.log(list);
-});
-```
-逻辑查询支持的子查询有 match、matchPhrase、gt、lt、term和between 
-
-## 全局配置
-|  配置项 | 默认  | 类型 |  备注  |
-| ------------ | ------------ | ------------ | ------------ |
-| scroll  | 1m  | String  |滚动游标的默认缓存时间   |
-| debug  | false  |  Boolean | 开启debug后，每次请求都会输出请求body |
-| primaryKey  | __id  |  String | 默认主键的列名 |
-
-配置项
-```javascript
-
-ESORm.set("name","value");
+## 聚合API
+### 基本的数值聚合
+```js
+  const Aggs = require('elasticsearch-orm').Aggs;
+  aggs = new Aggs('test').avg('age');
+  aggs = new Aggs('test').cardinality('age');
+  aggs = new Aggs('test').max('age');
+  aggs = new Aggs('test').min('age');
+  aggs = new Aggs('test').sum('age');
+  aggs = new Aggs('test').valueCount('age');
+  aggs = new Aggs('test').stats('age');
+  aggs = new Aggs('test').percentiles('age');
+  aggs = new Aggs('test').percentileRanks('age');
 
 ```
+### 分组聚合
+#### terms
+```js
+aggs = new Aggs('test').terms('age',{
+  'order':{
+      'field':"age",
+      'type':'desc'
+  },
+  'size':10
+  })
+```
+#### histogram
+```js
+aggs = new Aggs('test').histogram('age',10);
+```
+#### dateHistogram
+```js
+aggs= new Aggs('test').dateHistogram('date','month',{
+  'format':"yyyy-MM",
+  'offset':'+1h'
+  });
+```
+#### dateRange
+```js
+const Range = require('elasticsearch-orm').Range;
+aggs = new Aggs('test').dateRange('date',[new Range()],{
+  'format':"yyyy-MM"
+});
+```
+#### range
+```js
+aggs = new Aggs('test').ranges('age',[new Range(1,10)]);
+```
+#### filter
+```js
+aggs = new Aggs('test').filter('age',new Condition().matchAll());
+```
+#### missing
+```js
+aggs = new Aggs('test').missing('age')
 
+```
+#### sampler
+```js
+aggs =new Aggs('test').sampler(100,{
+  'max_doc_per_value':10
+});
+```
+#### children
+```js
+  aggs = new Aggs('test').children('childrenType');
+```
+#### significantTerms
+```js
+  aggs = new Aggs('test').significantTerms('age');
+```
+### 地理相关的聚合
+#### geoBounds
+```js
+aggs = new Aggs('test').geoBounds('location',{
+  'wrap_longtitude':true
+})
+```
 
-## 关于作者
-作者：Treagzhao      这是我第一次在npm发布模块，敬请各位指教 
+#### geoDistance
+```js
+aggs = new Aggs('test').geoDistance('location',{
+  'lon':100.0,
+  'lat':13.1
+},[new Range(1,10)]);
+```
+#### geoCentroid
+```js
+aggs = new Aggs('test').geoCentroid('location');
+```
