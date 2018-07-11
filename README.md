@@ -12,16 +12,14 @@
 ## 目录
 
 - [创建连接](#创建连接)
-- [Promises & Async/Await](#promises--asyncawait)
-- [Forms](#forms)
-- [HTTP Authentication](#http-authentication)
-- [Custom HTTP Headers](#custom-http-headers)
-- [OAuth Signing](#oauth-signing)
-- [Proxies](#proxies)
-- [Unix Domain Sockets](#unix-domain-sockets)
-- [TLS/SSL Protocol](#tlsssl-protocol)
-- [Support for HAR 1.2](#support-for-har-12)
-- [**All Available Options**](#requestoptions-callback)
+- [索引相关](#索引相关)
+- [文档相关](#文档相关)
+- [查询相关](#查询相关)
+- [使用聚合](#使用聚合)
+- [分页相关](#分页相关)
+- [设置](#设置)
+- [查询API](#查询API)
+- [聚合API](#聚合API)
 
 ---
 
@@ -500,4 +498,154 @@ condition.geoPolygon('location',[{
       }
   }
 }
+```
+#### geoBoundingBox
+```js
+  condition.geoBoundingBox('location',{
+    'top_left':{
+        'lon':100.1,
+        'lat':31.3
+    },
+    'bottom_right':{
+      'lon':100.3,
+      'lat':32.1
+    }
+    });
+```
+生成 json
+```json
+{
+  "geo_bounding_box":{
+    "location":{
+        "top_left":{
+          "lon":100.0,
+          "lat":31.3
+        },
+        "bottom_right":{
+          "lon":103.3,
+          "lat":31.3
+        }
+    }
+  }
+}
+```
+### 关系查询
+#### hasParent
+```js
+  condition.hasParent('parentType',new Condition().matchAll(),{
+    'score':1
+    });
+```
+生成 json
+```json
+  {
+    "has_parent":{
+      "parent_type":"parentType",
+      "query":{
+          "match_all":{}
+      }
+    }
+  }
+```
+#### hasChild
+```js
+  condition.hasChild('childType',new Condition().matchAll(),{
+    'min_children':10
+    });
+```
+生成 json
+```json
+  {
+    "has_child":{
+      "type":"childType",
+      "query":{
+        "match_all":{}
+      }
+    }
+  }
+```
+#### parentId
+```js
+condition.parentId('parent_id_1','type');
+```
+生成 json
+```json
+{
+  "parent_id":{
+    "type":"type",
+    "id":"parent_id_1"
+  }
+}
+```
+
+## 聚合API
+### 基本的数值聚合
+```js
+  const Aggs = require('elasticsearch-orm').Aggs;
+  aggs = new Aggs('test').avg('age');
+  aggs = new Aggs('test').cardinality('age');
+  aggs = new Aggs('test').max('age');
+  aggs = new Aggs('test').min('age');
+  aggs = new Aggs('test').sum('age');
+  aggs = new Aggs('test').valueCount('age');
+  aggs = new Aggs('test').stats('age');
+  aggs = new Aggs('test').percentiles('age');
+  aggs = new Aggs('test').percentileRanks('age');
+
+```
+### 分组聚合
+#### terms
+```js
+aggs = new Aggs('test').terms('age',{
+  'order':{
+      'field':"age",
+      'type':'desc'
+  },
+  'size':10
+  })
+```
+#### histogram
+```js
+aggs = new Aggs('test').histogram('age',10);
+```
+#### dateHistogram
+```js
+aggs= new Aggs('test').dateHistogram('date','month',{
+  'format':"yyyy-MM",
+  'offset':'+1h'
+  });
+```
+#### dateRange
+```js
+const Range = require('elasticsearch-orm').Range;
+aggs = new Aggs('test').dateRange('date',[new Range()],{
+  'format':"yyyy-MM"
+});
+```
+#### range
+```js
+aggs = new Aggs('test').ranges('age',[new Range(1,10)]);
+```
+#### filter
+```js
+aggs = new Aggs('test').filter('age',new Condition().matchAll());
+```
+#### missing
+```js
+aggs = new Aggs('test').missing('age')
+
+```
+#### sampler
+```js
+aggs =new Aggs('test').sampler(100,{
+  'max_doc_per_value':10
+});
+```
+#### children
+```js
+  aggs = new Aggs('test').children('childrenType');
+```
+#### significantTerms
+```js
+  aggs = new Aggs('test').significantTerms('age');
 ```
