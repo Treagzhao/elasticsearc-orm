@@ -148,7 +148,10 @@ ret 对象返回连个子对象，一个是list，是将结果提取好的_sourc
 ```
 多查询条件
 ```js
-  let ret = await demoIndex.term('age',12).match('title','')
+  let ret = await demoIndex
+  		.term('age',12)
+  		.match('title','')
+  		.query();
 ```
 must,should,not 查询
 ```js
@@ -171,7 +174,10 @@ filter 查询
 ```js
 const Condition = require("elasticsearch-orm").Condition;
 let condition = new Condition();
-condition.term('age',12).match('title','Title').not(new Conditio().range('age',0,10));
+condition.term('age',12)
+		.match('title','Title')
+		.not(new Conditio()
+		.range('age',0,10));
 let ret = await demoIndex
     .should(condition)
     .exists('location')
@@ -184,8 +190,8 @@ let ret = await demoIndex
 ```js
   const Aggs = require('elasticsearch-orm').Aggs;
   let ret = await demoIndex
-      .exist('age')
-      .aggs(new Aggs('avg_age').avg(age))
+      .exists('age')
+      .aggs(new Aggs('avg_age').avg('age'))
       .query();
 ```
 ### 聚合的子聚合
@@ -225,7 +231,7 @@ let ret = await demoIndex
       .query();
 ```
 ## 设置
-如果设置了 debug 为 true，则每次请求的请求体和、url和返回值都会被打印出来
+如果设置了 debug 为 true，则每次请求的请求体、url和返回值都会被打印出来
 ```js
   let instance = orm({
     'domain':'127.0.0.1',
@@ -236,9 +242,6 @@ let ret = await demoIndex
 可以设置 debug 的方法
 ```js
   instance.set("log",console.log);
-```
-```js
-request.get('http://google.com/img.png').pipe(request.put('http://mysite.com/img.png'))
 ```
 ## 查询API
 ### 文本匹配
@@ -475,10 +478,10 @@ condition.geoPolygon('location',[{
   },{
     'lon':101.0,
     'lat':42.1
-    },{
-      'lot':102.3,
-      'lat':42.4
-      }])
+   },{
+     'lot':102.3,
+     'lat':42.4
+    }])
 ```
 生成 json
 ```json
