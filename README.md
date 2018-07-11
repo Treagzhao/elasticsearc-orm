@@ -140,11 +140,92 @@ let id = await demoIndex.create({
 ## 查询相关
 ### 构建简单查询
 ```js
+    let ret = await demoIndex.query();
+```
+ret 对象返回连个子对象，一个是list，是将结果提取好的_source 数组，另一个是 orgResult，是 es 返回的原始内容
+### 查询条件
+单一查询条件，全部查询条件列表请参看 [查询 API](#查询API)
+```js
+  let ret = await demoIndex.term('age',12).query();
+```
+多查询条件
+```js
+  let ret = await demoIndex.term('age',12).match('title','')
+```
+must,should,not 查询
+```js
+  const Condition = require("elasticsearch-orm").Condition;
+  let ret = await demoIndex
+    .must(new Condition().term('age',12))
+    .should(new Condition().match('title','Tiel'))
+    .not(new Condition().exists('age'))
+    .query();
 
 ```
+filter 查询
+```js
+  const Condition = require("elasticsearch-orm").Condition;
+  let ret = await demoIndex
+            .filter(new Condition().matchAll())
+            .query();
+```
+### 构建嵌套查询
+```js
+const Condition = require("elasticsearch-orm").Condition;
+let condition = new Condition();
+condition.term('age',12).match('title','Title').not(new Conditio().range('age',0,10));
+let ret = await demoIndex
+    .should(condition)
+    .exists('location')
+    .query();
+```
 
-Request can also `pipe` to itself. When doing so, `content-type` and `content-length` are preserved in the PUT headers.
-
+## 使用聚合
+### 使用基本聚合
+通过 orgResult 对象的原始返回值，可以拿到聚合的结果，完整的聚合 API 请参看 [聚合 API](#聚合API)
+```js
+  const Aggs = require('elasticsearch-orm').Aggs;
+  let ret = await demoIndex
+      .exist('age')
+      .aggs(new Aggs('avg_age').avg(age))
+      .query();
+```
+### 聚合的子聚合
+```js
+  const Aggs = require('elasticsearch-orm').Aggs;
+  let aggs = new Aggs('test_aggs').terms('title');
+  aggs.aggs(new Aggs('sub_aggs').valueCount('age'));
+  let ret = await demoIndex
+      .exist('age')
+      .aggs(aggs)
+      .query();
+```
+## 分页相关
+### 分页
+```js
+  let ret = await demoIndex
+      .from(0)
+      .size(15)
+      .query();
+```
+### 排序
+```js
+  let ret = await demoIndex
+      .sort('age','asc')
+      .sort('title','asc','min')
+      .query();
+```
+或者
+```js
+  let ret = await demoIndex
+      .sort({
+          'age':{
+              'order':'desc',
+              'mode':'min'
+          }
+      })
+      .query();
+```
 ```js
 request.get('http://google.com/img.png').pipe(request.put('http://mysite.com/img.png'))
 ```
