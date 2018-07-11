@@ -142,7 +142,7 @@ let id = await demoIndex.create({
 ```
 ret 对象返回连个子对象，一个是list，是将结果提取好的_source 数组，另一个是 orgResult，是 es 返回的原始内容
 ### 查询条件
-单一查询条件，全部查询条件列表请参看 [查询 API](#查询API)
+单一查询条件，全部查询条件列表请参看 [查询 API](#user-content-查询api)
 ```js
   let ret = await demoIndex.term('age',12).query();
 ```
@@ -180,7 +180,7 @@ let ret = await demoIndex
 
 ## 使用聚合
 ### 使用基本聚合
-通过 orgResult 对象的原始返回值，可以拿到聚合的结果，完整的聚合 API 请参看 [聚合 API](#聚合API)
+通过 orgResult 对象的原始返回值，可以拿到聚合的结果，完整的聚合 API 请参看 [聚合 API](#user-content-聚合api)
 ```js
   const Aggs = require('elasticsearch-orm').Aggs;
   let ret = await demoIndex
