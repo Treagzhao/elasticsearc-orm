@@ -247,10 +247,8 @@ module.exports = function(name, opts, mappings = {}, settings) {
         if (joinFlag || !!routing) {
             let routing;
             if (!routing) {
-                console.log('ffffff');
                 routing = await getRandomRouting();
             }
-            console.log('routing', routing);
             url += 'routing=' + routing;
         }
         const body = await request({
