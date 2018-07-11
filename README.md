@@ -649,3 +649,22 @@ aggs =new Aggs('test').sampler(100,{
 ```js
   aggs = new Aggs('test').significantTerms('age');
 ```
+### 地理相关的聚合
+#### geoBounds
+```js
+aggs = new Aggs('test').geoBounds('location',{
+  'wrap_longtitude':true
+})
+```
+
+#### geoDistance
+```js
+aggs = new Aggs('test').geoDistance('location',{
+  'lon':100.0,
+  'lat':13.1
+},[new Range(1,10)]);
+```
+#### geoCentroid
+```js
+aggs = new Aggs('test').geoCentroid('location');
+```
