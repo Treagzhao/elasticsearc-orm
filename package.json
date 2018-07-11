@@ -11,7 +11,7 @@
     "url": "git@code.byted.org:tetris/zhaoxuebin_test.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "request": "^2.82.0"
   }
