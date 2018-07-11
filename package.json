@@ -1,10 +1,10 @@
 {
   "name": "elasticsearch-orm",
-  "version": "0.1.17",
+  "version": "1.0.0",
   "description": "This is a orm for elasticSearch",
   "main": "es.js",
   "scripts": {
-    "test": "mocha test --recursive --timeout 10000"
+    "test": "mocha --recursive --timeout 7000 test"
   },
   "repository": {
     "type": "git",
@@ -23,8 +23,5 @@
   "homepage": "https://github.com/Treagzhao/elasticsearc-orm#readme",
   "dependencies": {
     "request": "^2.82.0"
-  },
-  "devDependencies": {
-    "chai": "^4.1.2"
   }
 }
