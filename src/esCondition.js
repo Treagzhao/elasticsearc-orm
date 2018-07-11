@@ -116,3 +116,6 @@ module.exports = function() {
         return this;
     };
 }
+
+let i = new module.exports();
+console.log(i);

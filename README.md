@@ -243,3 +243,261 @@ let ret = await demoIndex
 request.get('http://google.com/img.png').pipe(request.put('http://mysite.com/img.png'))
 ```
 ## 查询API
+### 文本匹配
+#### match 查询
+```js
+  let condition = new Condition();
+  condition.match('title','content1 content2');
+  condition.match('title','content1 content2',{
+    'operator':'and'
+    });
+```
+生成的查询json 为
+```json
+  {
+    "match":{
+        "title":"content1 content2",
+        "operator":"and"
+    }
+  }
+```
+field 参数可以是数组
+```js
+  condition.match(['title','description'],'content1 content2');
+  condition.match(['title','description'],'content1 content2',{
+      'type':'best_fields'
+    });
+```
+生成的查询 json 为
+```json
+  {
+    "multi_match":{
+        "query":"content1 content2",
+        "type":"best_fields",
+        "fields":["title","description"]
+    }
+  }
+```
+#### 短语查询 matchPhrase 和 matchPhrasePrefix
+```js
+condition.matchPhrase('title','content1 content2');
+condition.matchPrasePrefix('title','content1 content2');
+condition.matchPhrase('title','content1 content2',{
+  'analyzer':'test_analyzer'
+  });
+```
+生成查询 json
+```json
+  {
+    "match_phrase":{
+      "title":{
+        "query":"content1 content2",
+        "analyzer":"test_analyzer"
+      }
+    }
+  }
+  {
+    "match_phrase_prefix":{
+      "title":{
+        "query":"content1 content2"
+      }
+    }
+  }
+```
+### 精确值
+#### term 查询
+```js
+condition.term('age',13);
+condition.term('age',[13,15]);
+```
+生成查询 json
+```json
+  {
+    "term":{
+        "age":13
+    }
+  }
+  {
+    "terms":{
+        "age":[13,15]
+    }
+  }
+```
+#### exists 查询
+```js
+condition.exists('age');
+condition.exists(['age','title']);
+```
+生成json
+```json
+{
+  "exists":{
+    "field":"age"
+  }
+}
+{
+  "exists":{
+    "fields":["age","title"]
+  }
+}
+```
+#### range 查询
+```js
+condition.range('age',1);
+condition.range('age',1,10);
+condition.range('age',null,10);
+condition.range('age',1,10,true,false);
+```
+生成json
+```json
+  {
+    "range":{
+        "age":{
+            "gt":1
+        }
+    }
+  }
+  {
+    "range":{
+        "age":{
+            "gt":1,
+            "lt":10
+        }
+    }
+  }
+  {
+    "range":{
+        "age":{
+            "lt":10
+        }
+    }
+  }
+  {
+    "range":{
+        "age":{
+            "gte":1,
+            "lt":10
+        }
+    }
+  }
+```
+使用 Range 对象
+```js
+const Range = require('elasticsearch-orm').Range();
+let range = new Range(1);
+range = new Range(1,10);
+range = new Range(1,10,false,true);
+range = new Range().gt(1,true).lt(10,false);
+condition.range(range);
+```
+#### prefix、wildcard 和fuzzy
+```js
+condition.prefix('title','Tre');
+condition.wildcard('title','Tre*hao');
+condition.fuzzy('title',{
+  'value':'ki',
+  'boost':1.0
+})
+```
+生成 json 文件
+```json
+{
+  "prefix":{
+    "title":"Tre"
+  }
+}
+{
+  "wildcard":{
+    "title":"Tre*hao"
+  }
+}
+{
+  "fuzzy":{
+    "title":{
+        "value":"ki",
+        "boost":1.0
+    }
+  }
+}
+```
+### 地理位置查询
+#### geoShape
+```js
+condition.geoShape('location','circle',
+  [{
+  'lon':100.0,
+  'lat':41.0
+  }],
+  {
+    'radius':"100m",
+    "relation":"within"
+    })
+```
+生成json
+```json
+  {
+    "geo_shape":{
+        "location":{
+            "shape":{
+              "type":"circle",
+              "coordinates":[{
+                "lon":100.0,
+                "lat":41.0
+              }],
+              "relation":"within"
+            }
+        }
+    }
+  }
+```
+#### geoDistance
+```js
+  condition.geoDistance('location',{
+    'lon':100.0,
+    'lat':31.0
+    },'100m');
+```
+生成 json
+```json
+  {
+    "geo_distance":{
+      "distance":"100m",
+      "location":{
+        "lon":100.0,
+        "lat":31.0
+      }
+    }
+  }
+```
+#### geoPolygon
+```js
+condition.geoPolygon('location',[{
+  'lon':100.0,
+  'lat':41.1
+  },{
+    'lon':101.0,
+    'lat':42.1
+    },{
+      'lot':102.3,
+      'lat':42.4
+      }])
+```
+生成 json
+```json
+{
+  "geo_polygon":{
+      "location":{
+          "points":[{
+                  "lon":100.0,
+                  "lat":41.1
+                },{
+                  "lon":101.0,
+                  "lat":42.1
+                },{
+                  "lot":102.3,
+                  "lat":42.4
+                }]
+      }
+  }
+}
+```
