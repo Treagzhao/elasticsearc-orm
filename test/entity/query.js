@@ -90,4 +90,36 @@ describe('query 查询相关测试', function() {
             done(e);
         })
     });
+
+    it("filter 查询", function(done) {
+        (async() => {
+            let testType = await getEntity();
+            let ret = await testType
+                .filter(new Condition().match('name', 'Treagzhao'))
+                .filter(new Condition().range('age', null, 10))
+                .query();
+            return ret;
+        })().then((ret) => {
+            checkResultOk(ret);
+            done();
+        }).catch((e) => {
+            done(e);
+        })
+    });
+    it("多条件查询", function(done) {
+        (async() => {
+            let testType = await getEntity();
+            let ret = await testType
+                .filter(new Condition().match('name', 'Treagzhao'))
+                .match('title', "Treagzhao")
+                .not(new Condition().exists('location'))
+                .query();
+            return ret;
+        })().then((ret) => {
+            checkResultOk(ret);
+            done();
+        }).catch((e) => {
+            done(e);
+        })
+    });
 });

@@ -1,30 +1,25 @@
 {
-  "name": "elasticsearch-orm",
-  "version": "0.1.17",
-  "description": "This is a orm for elasticSearch",
-  "main": "es.js",
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "test": "mocha test --recursive --timeout 10000"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Treagzhao/elasticsearc-orm.git"
+    "url": "git@code.byted.org:tetris/zhaoxuebin_test.git"
   },
-  "keywords": [
-    "es",
-    "elasticSearch",
-    "orm"
-  ],
-  "author": "Treagzhao",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Treagzhao/elasticsearc-orm/issues"
-  },
-  "homepage": "https://github.com/Treagzhao/elasticsearc-orm#readme",
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "request": "^2.82.0"
-  },
-  "devDependencies": {
-    "chai": "^4.1.2"
+    "byted-cas-authenticate": "^1.0.5",
+    "byted-quicksilver": "^0.2.14",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.16.3",
+    "readme-preview": "^0.2.0",
+    "request": "^2.87.0",
+    "xml": "^1.0.1",
+    "xml2json": "^0.11.2"
   }
 }
