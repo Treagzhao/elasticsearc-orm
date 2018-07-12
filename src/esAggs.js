@@ -37,5 +37,3 @@ module.exports = function(name) {
     };
 };
 
-let i = new module.exports('a');
-console.log(i);
