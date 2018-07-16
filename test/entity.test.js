@@ -1,12 +1,12 @@
 const orm = require('../es.js');
 const expect = require('chai').expect;
 const testId = 'test_id' + Math.random().toString(32).substr(2);
-
+const testConfig = require('./config.json');
 const getEntity = () => {
     return new Promise(function(resolve, reject) {
         let instance = orm({
-            'domain': 'zhaoxuebin.bytedance.com',
-            'port': 9200
+            'domain': testConfig.host,
+            'port': testConfig.port
         });
         instance.on('connected', () => {
             let testType = instance.register('testType', {

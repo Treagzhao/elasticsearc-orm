@@ -229,6 +229,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
 
 
     this.create = async(data, id = '', routing) => {
+        id = !!id ? id : '';
         let url = `${BASE_URL}${INDEX}/${TYPE}/${id}?`;
         const reqType = !!id ? 'PUT' : 'POST';
         const joinFlag = getJoinFlag(data);

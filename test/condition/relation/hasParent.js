@@ -11,6 +11,9 @@ describe('测试关系类型的 HasParent方法', function() {
         expect(function() {
             condition.hasParent('parentType')
         }).to.throw(Error);
+         expect(function() {
+            condition.hasParent('parentType',null)
+        }).to.throw(Error);
         condition = new Condition();
         expect(function() {
             condition.hasParent('parentType', 'test');

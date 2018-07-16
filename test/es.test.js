@@ -1,10 +1,11 @@
 let orm = require('../es.js');
 const expect = require('chai').expect;
+const config = require('./config.json');
 describe('连接相关测试', function() {
     it('创建连接测试', function(done) {
         let instance = orm({
-            'domain': 'zhaoxuebin.bytedance.com',
-            'port': 9200
+            'domain': config.host,
+            'port': config.port
         });
         instance.on('connected', () => {
             done();
@@ -16,7 +17,7 @@ describe('连接相关测试', function() {
     it('创建错误的连接', function(done) {
         let instance = orm({
             'domain': 'not.exists.com',
-            'port': 9200
+            'port': config.port
         });
         instance.on('connected', () => {
             done(new Error('???'));
@@ -28,8 +29,8 @@ describe('连接相关测试', function() {
     });
     it('创建Index 和 Type', function(done) {
         let instance = orm({
-            'domain': 'zhaoxuebin.bytedance.com',
-            'port': 9200
+            'domain': config.host,
+            'port': config.port
         });
         instance.on('connected', () => {
             let testType = instance.register('testType', {
@@ -61,8 +62,8 @@ describe('连接相关测试', function() {
 
     it('为 Index 和 Type 增加 mapping', function(done) {
         let instance = orm({
-            'domain': 'zhaoxuebin.bytedance.com',
-            'port': 9200
+            'domain': config.host,
+            'port': config.port
         });
         let testType = instance.register('testType', {
             'index': 'mocha_test',

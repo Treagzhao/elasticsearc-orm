@@ -1,11 +1,12 @@
 const orm = require('../../es.js');
 const expect = require('chai').expect;
 const Condition = orm.Condition;
+const config = require('../config.json');
 const getEntity = () => {
     return new Promise(function(resolve, reject) {
         let instance = orm({
-            'domain': 'zhaoxuebin.bytedance.com',
-            'port': 9200
+            'domain': config.host,
+            'port': config.port
         });
         instance.on('connected', () => {
             let testType = instance.register('testType', {

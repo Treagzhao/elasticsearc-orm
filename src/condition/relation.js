@@ -4,7 +4,7 @@ module.exports = function() {
         if (typeof parentType !== 'string') {
             throw new Error('arguments type error');
         }
-        if (!(condition.isInstanceofCondition && condition.isInstanceofCondition())) {
+        if (!(condition && condition.isInstanceofCondition && condition.isInstanceofCondition())) {
             throw new Error('condition must be an instance of Condition');
         }
         this.count++;
