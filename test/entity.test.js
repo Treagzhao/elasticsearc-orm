@@ -25,6 +25,21 @@ const getEntity = () => {
     });
 };
 
+describe('Index 与 Type 相关功能', function() {
+    it('获取一个 index 的 mappings', function(done) {
+        (async() => {
+            let testType = await getEntity();
+            let mappings = await testType.getMappings();
+            return mappings;
+        })().then((mappings) => {
+            expect(mappings).to.be.an('object');
+            done();
+        }).catch((e) => {
+            done(e);
+        });
+    });
+});
+
 describe('文档相关功能测试', function() {
 
     it('创建一个文档——不指定 ID', function(done) {

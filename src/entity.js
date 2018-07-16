@@ -138,6 +138,20 @@ module.exports = function(name, opts, mappings = {}, settings) {
         return routing;
     };
 
+
+    this.getMappings = async() => {
+        const url = `${BASE_URL}${INDEX}/_mappings`;
+        let ret = await request({
+            url,
+            'method': 'GET'
+        });
+        let mappings = ret[INDEX].mappings;
+        if (mappings.hasOwnProperty(TYPE)) {
+            return mappings[TYPE].properties;
+        } else {
+            return;
+        }
+    };
     this.from = (from) => {
         if (isNaN(from)) {
             throw new Error('from parameter is invalid');
@@ -212,6 +226,8 @@ module.exports = function(name, opts, mappings = {}, settings) {
         });
         return joinFlag;
     };
+
+    this.checkIndexExists = checkIndexExists;
 
     this.source = (sources) => {
         this.sourceList = sources;
