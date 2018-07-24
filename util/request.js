@@ -18,6 +18,7 @@ module.exports = (opts) => {
         if (DEBUG) {
             logArr.push('----------start');
             logArr.push('url:' + opts.url);
+            logArr.push('method:' + opts.method);
             logArr.push('params:' + opts.body);
         }
         request(opts, (err, response, body) => {

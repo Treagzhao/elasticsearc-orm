@@ -275,5 +275,10 @@ describe('分组聚合的相关测试', function() {
         aggs.significantTerms('age');
         expect(aggs.aggValueOf()).to.have.property('significant_terms');
         expect(aggs.aggValueOf().significant_terms).to.have.property('field', 'age');
+        aggs = new Aggs('name').significantTerms('name', {
+            'min_doc_count': 5,
+            'shard_size': 10
+        });
+        expect(aggs.aggValueOf().significant_terms).to.have.property('min_doc_count', 5);
     });
 });

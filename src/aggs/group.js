@@ -172,7 +172,7 @@ module.exports = function(name) {
         return this;
     };
 
-    this.significantTerms = (field) => {
+    this.significantTerms = (field, opts = {}) => {
         if (typeof field !== 'string') {
             throw new Error('arguments type error');
         }
@@ -181,6 +181,12 @@ module.exports = function(name) {
                 field
             }
         };
+        let ordinary = ['min_doc_count', 'shard_size'];
+        ordinary.forEach((key) => {
+            if (opts[key] !== undefined) {
+                this.agg.significant_terms[key] = opts[key];
+            }
+        });
         this.aggCount++;
         return this;
     };

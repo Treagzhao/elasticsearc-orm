@@ -7,13 +7,15 @@ module.exports = function() {
             this.count++;
             let param = {
                 'match': {
-                    [field]: value
+                    [field]: {
+                        'query': value
+                    }
                 }
             };
             let ordinary = ['operator', 'zero_terms_query'];
             ordinary.forEach(function(key) {
                 if (opts[key] !== undefined) {
-                    param.match[key] = opts[key];
+                    param.match[field][key] = opts[key];
                 }
             });
             this.mustList.push(param);

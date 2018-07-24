@@ -31,7 +31,8 @@ describe('测试文本的 match 方法', function() {
         condition.match('field', 'text');
         expect(condition.valueOf()).to.be.an('object');
         expect(condition.valueOf()).to.have.property('match');
-        expect(condition.valueOf().match).to.have.property('field', 'text');
+        expect(condition.valueOf().match).to.have.property('field');
+        expect(condition.valueOf().match.field).to.have.property('query', 'text');
     });
     it('匹配多字段测试', function() {
         let condition = new Condition();
