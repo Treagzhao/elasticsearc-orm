@@ -255,6 +255,16 @@ module.exports = function(name, opts, mappings = {}, settings) {
             throw new Error("index and type do not exist");
         }
         //判断是否存在
+        let docExists = false;
+        try {
+            await this.get(id);
+            docExists = true;
+        } catch (e) {
+            docExists = false;
+        };
+        if (docExists) {
+            throw new Error('id already exists');
+        }
         id = !!id ? id : '';
         let url = urlBuilder.buildCreateUrl(dbMappings, id, { routing }); //`${BASE_URL}${INDEX}/${TYPE}/${id}?`;
         const reqType = !!id ? 'PUT' : 'POST';

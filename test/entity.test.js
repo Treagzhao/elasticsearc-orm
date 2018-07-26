@@ -99,7 +99,6 @@ describe('文档相关功能测试', function() {
                     'lat': 43.234
                 }
             }, testId);
-            console.log(id,testId);
         })().then(() => {
             done(new Error('???'));
         }).catch((e) => {
