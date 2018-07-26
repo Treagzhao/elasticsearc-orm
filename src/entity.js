@@ -1,5 +1,6 @@
 const request = require('../util/request.js');
 const config = require('../util/globalConfig.js');
+const UrlBuilder = require('./uri-builder/urlBuilder.js');
 const Condition = require('./esCondition.js'),
     Aggs = require('./esAggs.js');
 module.exports = function(name, opts, mappings = {}, settings) {
@@ -10,11 +11,13 @@ module.exports = function(name, opts, mappings = {}, settings) {
         BASE_URL = config.get('BASE_URL'),
         INDEX = opts.index,
         TYPE = opts.type;
+    const urlBuilder = new UrlBuilder(BASE_URL, INDEX, TYPE);
     let exists, dbMappings;
     let shardsCount;
     this.sortList = [];
     this.aggsList = [];
     this.sourceList = undefined;
+
     const reset = () => {
         this.mustList = [];
         this.shouldList = [];
@@ -245,29 +248,35 @@ module.exports = function(name, opts, mappings = {}, settings) {
 
 
     this.create = async(data, id = '', routing) => {
+        if (exists === undefined) {
+            exists = await checkExists();
+        }
+        if (!exists) {
+            throw new Error("index and type do not exist");
+        }
         id = !!id ? id : '';
-        let url = `${BASE_URL}${INDEX}/${TYPE}/${id}?`;
+        let url = urlBuilder.buildCreateUrl(dbMappings, id, { routing }); //`${BASE_URL}${INDEX}/${TYPE}/${id}?`;
         const reqType = !!id ? 'PUT' : 'POST';
-        const joinFlag = getJoinFlag(data);
-        if (!!id) {
-            let exists = false;
-            try {
-                let info = await this.get(id);
-                exists = true;
-            } catch (e) {
-                exists = false;
-            };
-            if (exists) {
-                throw new Error('id is exists');
-            }
-        }
-        if (joinFlag || !!routing) {
-            let routing;
-            if (!routing) {
-                routing = await getRandomRouting();
-            }
-            url += 'routing=' + routing;
-        }
+        // const joinFlag = getJoinFlag(data);
+        // if (!!id) {
+        //     let exists = false;
+        //     try {
+        //         let info = await this.get(id);
+        //         exists = true;
+        //     } catch (e) {
+        //         exists = false;
+        //     };
+        //     if (exists) {
+        //         throw new Error('id is exists');
+        //     }
+        // }
+        // if (joinFlag || !!routing) {
+        //     let routing;
+        //     if (!routing) {
+        //         routing = await getRandomRouting();
+        //     }
+        //     url += 'routing=' + routing;
+        // }
         const body = await request({
             url,
             'method': reqType,
@@ -277,20 +286,27 @@ module.exports = function(name, opts, mappings = {}, settings) {
     }
 
     this.update = async(id, data, routing) => {
-        const joinFlag = getJoinFlag(data);
-        let url = `${BASE_URL}${INDEX}/${TYPE}/${id}`;
-        if (joinFlag) {
-            if (!routing) {
-                let routing = await getRandomRouting();
-            }
-            url += '?routing=' + routing;
+        if (exists === undefined) {
+            exists = await checkExists();
         }
+        if (!exists) {
+            throw new Error("index and type do not exist");
+        }
+        if (id === undefined || id === '') {
+            throw new Error('id could not be null');
+        }
+        let url = urlBuilder.buildUpdateUrl(dbMappings, id, { routing });
         const body = await request({
             url,
             'method': 'PUT',
             'body': JSON.stringify(data)
         });
         return;
+    };
+
+    this.scroll = (options = {}) => {
+        this.scroll = options;
+        return this;
     };
 
     this.get = async(id) => {
@@ -304,7 +320,34 @@ module.exports = function(name, opts, mappings = {}, settings) {
         }
     };
 
-    this.query = async() => {
+    this.scroll = async(id, options = {}) => {
+        if (!id) {
+            throw new Error('id could not be blank');
+        }
+        if (exists === undefined) {
+            exists = await checkExists();
+        }
+        if (!exists) {
+            throw new Error("index and type do not exist");
+        }
+        let url = urlBuilder.buildScrollUrl(id, options);
+        let result = await request({
+            url,
+            'method': 'POST',
+            'data': '{}'
+        });
+        let list = result.hits.hits.map((item) => {
+            item._source.id = item._id;
+            return item._source;
+        });
+        reset();
+        return {
+            list,
+            'orgResult': result
+        }
+    };
+
+    this.query = async(options = {}) => {
         let obj = this.valueOf();
         const body = {
             'query': obj
@@ -324,7 +367,11 @@ module.exports = function(name, opts, mappings = {}, settings) {
         if (this.aggsList.length > 0) {
             body.aggs = buildAggs();
         }
-        const url = `${BASE_URL}${INDEX}/${TYPE}/_search`;
+        const params = {};
+        if (options.scroll) {
+            params.scroll = options.scroll;
+        }
+        const url = urlBuilder.buildQueryUrl(params);
         let result = await request({
             url,
             'body': JSON.stringify(body),

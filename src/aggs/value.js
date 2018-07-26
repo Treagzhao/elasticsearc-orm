@@ -116,4 +116,14 @@ module.exports = function() {
         this.aggCount++;
         return this;
     };
+
+    this.topHits = (size) => {
+        this.agg = {
+            'top_hits': {
+                size
+            }
+        };
+        this.aggCount++;
+        return this;
+    };
 };
