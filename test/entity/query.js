@@ -123,4 +123,37 @@ describe('query 查询相关测试', function() {
             done(e);
         })
     });
+
+    it('发起一个滚动', function(done) {
+        (async() => {
+            let testType = await getEntity();
+            let ret = await testType
+                .query({
+                    'scroll': '1m'
+                });
+            return ret.orgResult;
+        })().then((ret) => {
+            expect(ret).to.have.property('_scroll_id');
+            done();
+        }).catch((e) => {
+            done(e);
+        });
+    });
+
+    it('执行一个滚动', function(done) {
+        (async() => {
+            let testType = await getEntity();
+            let ret = await testType
+                .query({
+                    'scroll': '1m'
+                });
+            let scrollId = ret.orgResult._scroll_id;
+            ret = await testType.scroll(scrollId);
+            return ret.orgResult;
+        })().then(() => {
+            done();
+        }).catch((e) => {
+            done(e);
+        })
+    });
 });
