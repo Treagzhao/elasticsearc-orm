@@ -254,29 +254,10 @@ module.exports = function(name, opts, mappings = {}, settings) {
         if (!exists) {
             throw new Error("index and type do not exist");
         }
+        //判断是否存在
         id = !!id ? id : '';
         let url = urlBuilder.buildCreateUrl(dbMappings, id, { routing }); //`${BASE_URL}${INDEX}/${TYPE}/${id}?`;
         const reqType = !!id ? 'PUT' : 'POST';
-        // const joinFlag = getJoinFlag(data);
-        // if (!!id) {
-        //     let exists = false;
-        //     try {
-        //         let info = await this.get(id);
-        //         exists = true;
-        //     } catch (e) {
-        //         exists = false;
-        //     };
-        //     if (exists) {
-        //         throw new Error('id is exists');
-        //     }
-        // }
-        // if (joinFlag || !!routing) {
-        //     let routing;
-        //     if (!routing) {
-        //         routing = await getRandomRouting();
-        //     }
-        //     url += 'routing=' + routing;
-        // }
         const body = await request({
             url,
             'method': reqType,

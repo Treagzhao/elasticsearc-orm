@@ -149,9 +149,9 @@ ret 对象返回连个子对象，一个是list，是将结果提取好的_sourc
 多查询条件
 ```js
   let ret = await demoIndex
-  		.term('age',12)
-  		.match('title','')
-  		.query();
+      .term('age',12)
+      .match('title','')
+      .query();
 ```
 must,should,not 查询
 ```js
@@ -175,9 +175,9 @@ filter 查询
 const Condition = require("elasticsearch-orm").Condition;
 let condition = new Condition();
 condition.term('age',12)
-		.match('title','Title')
-		.not(new Conditio()
-		.range('age',0,10));
+    .match('title','Title')
+    .not(new Conditio()
+    .range('age',0,10));
 let ret = await demoIndex
     .should(condition)
     .exists('location')
@@ -211,6 +211,23 @@ let ret = await demoIndex
       .from(0)
       .size(15)
       .query();
+```
+### 使用滚动
+发起一个滚动
+```js
+    await demoIndex.query({
+        'scroll':'1m'
+    })
+```
+执行滚动
+```js
+    await demoIndex.scroll(scrollId,{
+        'scroll':'1m'
+    });
+```
+清除一个滚动
+```js
+    await demoIndex.clearScroll(scrollId);
 ```
 ### 排序
 ```js

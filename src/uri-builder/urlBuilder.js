@@ -30,6 +30,9 @@ module.exports = function(BASE, INDEX, TYPE) {
     };
 
     this.buildUpdateUrl = (mappings, id, options = {}) => {
+        if (id === undefined || id === '') {
+            throw new Error('id could not be blank');
+        }
         let joinFlag = getJoinFlag(mappings);
         let url = `${BASE}${INDEX}/${TYPE}/${id}`;
         let opts = Object.keys(options).filter((key) => { return options[key] !== undefined; });
