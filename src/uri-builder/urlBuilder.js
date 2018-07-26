@@ -65,9 +65,13 @@ module.exports = function(BASE, INDEX, TYPE) {
 
     this.buildScrollUrl = (id, options = {}) => {
         let url = `${BASE}_search/scroll/${id}`;
+        if (!options.scroll) {
+            options.scroll = config.get('scroll');
+        }
         if (options.scroll) {
             url += '?scroll=' + options.scroll;
         }
         return url;
     };
+
 };

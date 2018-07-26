@@ -347,6 +347,25 @@ module.exports = function(name, opts, mappings = {}, settings) {
         }
     };
 
+
+    this.clearScroll = async(id) => {
+        if (!id) {
+            throw new Error('id could not be blank');
+        }
+        if (exists === undefined) {
+            exists = await checkExists();
+        }
+        if (!exists) {
+            throw new Error("index and type do not exist");
+        }
+        let url = urlBuilder.buildScrollUrl(id);
+        let result = await request({
+            url,
+            'method': 'DELETE'
+        });
+        return result;
+    }
+
     this.query = async(options = {}) => {
         let obj = this.valueOf();
         const body = {
@@ -366,6 +385,9 @@ module.exports = function(name, opts, mappings = {}, settings) {
         }
         if (this.aggsList.length > 0) {
             body.aggs = buildAggs();
+        }
+        if (options.slice) {
+            body.slice = options.slice;
         }
         const params = {};
         if (options.scroll) {
