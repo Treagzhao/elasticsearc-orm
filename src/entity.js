@@ -247,7 +247,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
     };
 
 
-    this.create = async(data, id = '', routing) => {
+    this.create = async(data, id = '', routing, options = {}) => {
         if (exists === undefined) {
             exists = await checkExists();
         }
@@ -266,7 +266,10 @@ module.exports = function(name, opts, mappings = {}, settings) {
             throw new Error('id already exists');
         }
         id = !!id ? id : '';
-        let url = urlBuilder.buildCreateUrl(dbMappings, id, { routing }); //`${BASE_URL}${INDEX}/${TYPE}/${id}?`;
+        let url = urlBuilder.buildCreateUrl(dbMappings, id, {
+            routing,
+            parent: options.parent
+        }); //`${BASE_URL}${INDEX}/${TYPE}/${id}?`;
         const reqType = !!id ? 'PUT' : 'POST';
         const body = await request({
             url,

@@ -67,12 +67,15 @@ describe('地理相关聚合测试', function() {
         aggs.geoDistance('location', {
             'lon': 1,
             'lat': 2
-        }, [new Range(10, 11)]);
+        }, [new Range(10, 11)], {
+            'unit': 'km'
+        });
         expect(aggs.aggValueOf()).to.have.property('geo_distance');
         expect(aggs.aggValueOf().geo_distance).to.have.property('field', 'location');
         expect(aggs.aggValueOf().geo_distance).to.have.property('origin');
         expect(aggs.aggValueOf().geo_distance).to.have.property('ranges');
         expect(aggs.aggValueOf().geo_distance.origin).to.have.property('lon', 1);
         expect(aggs.aggValueOf().geo_distance.ranges).to.have.lengthOf(1);
+        expect(aggs.aggValueOf().geo_distance).to.have.property('unit', 'km');
     });
 });

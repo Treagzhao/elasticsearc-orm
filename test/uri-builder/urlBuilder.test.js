@@ -17,6 +17,9 @@ describe('URL 构建器相关', function() {
         expect(() => {
             builder.buildCreateUrl(mappins, 'id')
         }).to.throw(Error);
+        expect(builder.buildCreateUrl({}, 'id', {
+            'parent': 'parent_id'
+        })).to.equal(BASE + INDEX + '/' + TYPE + '/id?parent=parent_id')
     });
 
     it('更新文档逻辑', function() {

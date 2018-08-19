@@ -111,6 +111,15 @@ let id = await demoIndex.create({
     }
   },'document_id','routing_hash');
 ```
+指定父节点
+```js
+  await demoIndex.create({
+    'title':'Title',
+    'age':123
+    },null,null,{
+      'parent':'parent_id'
+    })
+```
 ### 更新文档
 ```js
   await demoIndex.update('docuemnt_id',{
@@ -682,7 +691,9 @@ aggs = new Aggs('test').geoBounds('location',{
 aggs = new Aggs('test').geoDistance('location',{
   'lon':100.0,
   'lat':13.1
-},[new Range(1,10)]);
+},[new Range(1,10)],{
+  'unit':'m'
+  });
 ```
 #### geoCentroid
 ```js

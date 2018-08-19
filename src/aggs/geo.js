@@ -34,10 +34,12 @@ module.exports = function(name) {
             throw new Error('ranges must be a list of ESRange');
         }
         this.aggCount++;
+
         this.agg = {
             'geo_distance': {
                 field,
                 origin,
+                'unit': options.unit,
                 'ranges': ranges.map((item) => { return item.fromToValue() })
             }
         };
