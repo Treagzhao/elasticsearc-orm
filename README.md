@@ -137,6 +137,7 @@ let id = await demoIndex.create({
 ### 删除文档
 ```js
   await demoIndex.delete(id);
+  await demoIndex.delete(['id1','id2'])
 ```
 ### 通过 id 获取文档 
 如果 id 不存在，会返回一个 Error

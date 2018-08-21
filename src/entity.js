@@ -185,14 +185,34 @@ module.exports = function(name, opts, mappings = {}, settings) {
     };
 
     this.delete = async(id) => {
-        if (!id) {
-            throw new Error("id is not defined");
+        let idStr;
+        if (Object.prototype.toString.call(id).indexOf("Array") >= 0) {
+            let bodies = id.map((item) => {
+                let obj = {
+                    'delete': {
+                        '_id': item
+                    }
+                };
+                return JSON.stringify(obj);
+            });
+            const url = `${BASE_URL}${INDEX}/${TYPE}/_bulk`;
+            let result = await request({
+                url,
+                'method': 'POST',
+                'body': bodies.join('\n')
+            });
+        } else {
+            idStr = id;
+            if (!id) {
+                throw new Error("id is not defined");
+            }
+            const url = `${BASE_URL}${INDEX}/${TYPE}/${idStr}`;
+            let result = await request({
+                url,
+                'method': 'DELETE'
+            });
         }
-        const url = `${BASE_URL}${INDEX}/${TYPE}/${id}`;
-        let result = await request({
-            url,
-            'method': 'DELETE'
-        });
+
     };
 
     this.sort = (...args) => {
@@ -295,7 +315,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
             'method': 'PUT',
             'body': JSON.stringify(data)
         });
-        return;
+        return body;
     };
 
     this.scroll = (options = {}) => {
