@@ -115,6 +115,9 @@ module.exports = function(name, opts, mappings = {}, settings) {
                 incremental[key] = mappings[key];
             });
         }
+        if (Object.keys(incremental).length == 0) {
+            return;
+        }
         let params = {
             'properties': incremental
         };
