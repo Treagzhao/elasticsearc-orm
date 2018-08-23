@@ -12,8 +12,8 @@
     "orm"
   ],
   "repository": {
-    "type": "git",
-    "url": "git@code.byted.org:tetris/zhaoxuebin_test.git"
+    "type": "https",
+    "url": "https://github.com/Treagzhao/elasticsearc-orm"
   },
   "author": "",
   "license": "MIT",
