@@ -13,7 +13,9 @@ module.exports = function(BASE, INDEX, TYPE) {
         if (id !== undefined) {
             url += '/' + id;
         }
-        let opts = Object.keys(options).filter((key) => { return options[key] !== undefined; });
+        let opts = Object.keys(options).filter((key) => {
+            return (options[key] !== undefined && options[key] !== null);
+        });
         if (opts.length > 0) {
             url += '?';
         }
