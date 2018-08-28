@@ -279,20 +279,23 @@ module.exports = function(name, opts, mappings = {}, settings) {
         }
         //判断是否存在
         let docExists = false;
-        try {
-            await this.get(id);
-            docExists = true;
-        } catch (e) {
-            docExists = false;
-        };
-        if (docExists) {
-            throw new Error('id already exists');
-        }
         id = !!id ? id : '';
+        if (id) {
+            try {
+                await this.get(id);
+                docExists = true;
+            } catch (e) {
+                docExists = false;
+            };
+            if (docExists) {
+                throw new Error('id already exists');
+            }
+        }
+
         let url = urlBuilder.buildCreateUrl(dbMappings, id, {
             routing,
             parent: options.parent
-        }); //`${BASE_URL}${INDEX}/${TYPE}/${id}?`;
+        });
         const reqType = !!id ? 'PUT' : 'POST';
         const body = await request({
             url,
