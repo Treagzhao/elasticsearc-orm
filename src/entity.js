@@ -38,7 +38,18 @@ module.exports = function(name, opts, mappings = {}, settings) {
                 'url': url,
                 'method': 'GET'
             });
-            let mappings = result[INDEX].mappings;
+            let mappings = {};
+            if (result[INDEX]) {
+                mappings = result[INDEX].mappings;
+            } else {
+                Object.keys(result).some((key) => {
+                    let item = result[key];
+                    if (!!item.aliases) {
+                        mappings = item.mappings;
+                    }
+                    return false;
+                });
+            }
             flag = mappings.hasOwnProperty(TYPE);
             if (flag) {
                 dbMappings = mappings[TYPE].properties;
