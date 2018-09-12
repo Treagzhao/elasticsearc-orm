@@ -21,6 +21,7 @@ module.exports = (opts) => {
             logArr.push('method:' + opts.method);
             logArr.push('params:' + opts.body);
         }
+        let start = +new Date();
         request(opts, (err, response, body) => {
             if (err) {
                 reject(err);
@@ -28,6 +29,8 @@ module.exports = (opts) => {
             }
             try {
                 body = JSON.parse(body);
+                let duration = new Date() - start;
+                body.netDuration = duration;
                 if (DEBUG) {
                     logArr.push('body:' + JSON.stringify(body));
                     logArr.push('----------end');
