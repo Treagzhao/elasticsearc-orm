@@ -12,7 +12,11 @@ const initContentType = (opts) => {
 module.exports = (opts) => {
     const DEBUG = config.get('debug');
     const log = config.get("log") || console.log;
+    const TIMEOUT = config.get('timeout');
     initContentType(opts);
+    if (!opts.timeout) {
+        opts.timeout = TIMEOUT;
+    }
     let logArr = [];
     return new Promise((resolve, reject) => {
         if (DEBUG) {

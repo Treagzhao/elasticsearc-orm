@@ -270,6 +270,10 @@ let ret = await demoIndex
 ```js
   instance.set("log",console.log);
 ```
+设置请求超时时间，以毫秒为单位（默认是30s）
+```js
+  instance.set('timeout',5000);
+```
 ## 查询API
 ### 文本匹配
 #### match 查询
