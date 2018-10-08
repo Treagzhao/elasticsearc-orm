@@ -18,15 +18,15 @@ function Connection(opts) {
     const entities = new Map();
     const BASE_URL = `http://${opts.domain}:${opts.port}/`;
 
-    let testConnection = async() => {
+    let testConnection = async () => {
         let body = await request({
             'url': BASE_URL,
-            'timeout': 5000
+            'timeout': 1500
         });
         config.set('version', buildVersion(body.version.number));
     };
 
-    let connect = async() => {
+    let connect = async () => {
         await testConnection();
     };
 

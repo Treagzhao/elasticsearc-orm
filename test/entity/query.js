@@ -32,7 +32,7 @@ const checkResultOk = function(ret) {
 
 describe('query 查询相关测试', function() {
     it('基本查询', function(done) {
-        (async() => {
+        (async () => {
             let testType = await getEntity();
             let ret = await testType.query();
             return ret;
@@ -45,7 +45,7 @@ describe('query 查询相关测试', function() {
     });
 
     it('多个条件查询', function(done) {
-        (async() => {
+        (async () => {
             let testType = await getEntity();
             let ret = await testType
                 .match('description', 'world')
@@ -61,7 +61,7 @@ describe('query 查询相关测试', function() {
     });
 
     it("should 条件查询", function(done) {
-        (async() => {
+        (async () => {
             let testType = await getEntity();
             let ret = await testType
                 .should(new Condition().match('name', 'Treagzhao'))
@@ -77,7 +77,7 @@ describe('query 查询相关测试', function() {
     });
 
     it("not 条件查询", function(done) {
-        (async() => {
+        (async () => {
             let testType = await getEntity();
             let ret = await testType
                 .not(new Condition().match('name', 'Treagzhao'))
@@ -93,7 +93,7 @@ describe('query 查询相关测试', function() {
     });
 
     it("filter 查询", function(done) {
-        (async() => {
+        (async () => {
             let testType = await getEntity();
             let ret = await testType
                 .filter(new Condition().match('name', 'Treagzhao'))
@@ -108,7 +108,7 @@ describe('query 查询相关测试', function() {
         })
     });
     it("多条件查询", function(done) {
-        (async() => {
+        (async () => {
             let testType = await getEntity();
             let ret = await testType
                 .filter(new Condition().match('name', 'Treagzhao'))
@@ -125,7 +125,7 @@ describe('query 查询相关测试', function() {
     });
 
     it('发起一个滚动', function(done) {
-        (async() => {
+        (async () => {
             let testType = await getEntity();
             let ret = await testType
                 .query({
@@ -141,7 +141,7 @@ describe('query 查询相关测试', function() {
     });
 
     it('执行一个滚动', function(done) {
-        (async() => {
+        (async () => {
             let testType = await getEntity();
             let ret = await testType
                 .query({

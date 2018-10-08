@@ -2,10 +2,11 @@ const request = require('../util/request.js');
 const config = require('../util/globalConfig.js');
 const UrlBuilder = require('./uri-builder/urlBuilder.js');
 const Condition = require('./esCondition.js'),
+    Query = require('./esQuery.js'),
     Aggs = require('./esAggs.js');
 module.exports = function(name, opts, mappings = {}, settings) {
     const self = this;
-    Condition.call(this);
+    //Condition.call(this);
     const DOMAIN = config.get('domain'),
         PORT = config.get('port'),
         BASE_URL = config.get('BASE_URL'),
@@ -17,7 +18,13 @@ module.exports = function(name, opts, mappings = {}, settings) {
     this.sortList = [];
     this.aggsList = [];
     this.sourceList = undefined;
-
+    Object.keys(new Condition()).forEach((key) => {
+        self[key] = (...args) => {
+            let query = new Query(BASE_URL, INDEX, TYPE);
+            query[key].apply(query, args);
+            return query;
+        };
+    });
     const reset = () => {
         this.mustList = [];
         this.shouldList = [];
@@ -30,7 +37,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
         this.limit = undefined;
     };
 
-    const checkExists = async() => {
+    const checkExists = async () => {
         const url = BASE_URL + INDEX;
         let result, flag = false;
         try {
@@ -60,7 +67,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
         return flag;
     };
 
-    const checkIndexExists = async() => {
+    const checkIndexExists = async () => {
         let flag = false;
         try {
             let url = `${BASE_URL}${INDEX}`;
@@ -75,7 +82,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
         }
     };
 
-    const createDb = async() => {
+    const createDb = async () => {
         let indexExists = await checkIndexExists();
         if (!indexExists) {
             const url = BASE_URL + INDEX;
@@ -117,7 +124,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
         return param;
     };
 
-    const updateDb = async() => {
+    const updateDb = async () => {
         let incremental = {};
         if (mappings && dbMappings) {
             Object.keys(mappings).filter((key) => {
@@ -140,7 +147,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
         });
     };
 
-    const getRandomRouting = async() => {
+    const getRandomRouting = async () => {
         if (!shardsCount) {
             const url = `${BASE_URL}${INDEX}`;
             const ret = await request({
@@ -156,7 +163,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
     };
 
 
-    this.getMappings = async() => {
+    this.getMappings = async () => {
         const url = `${BASE_URL}${INDEX}/_mappings`;
         let ret = await request({
             url,
@@ -173,18 +180,20 @@ module.exports = function(name, opts, mappings = {}, settings) {
         if (isNaN(from)) {
             throw new Error('from parameter is invalid');
         }
-        this.offset = from;
-        return this;
+        let query = new Query(BASE_URL, INDEX, TYPE);
+        query.from(from);
+        return query;
     };
     this.size = (size) => {
         if (isNaN(size)) {
             throw new Error('from parameter is invalid');
         }
-        this.limit = size;
-        return this;
+        let query = new Query(BASE_URL, INDEX, TYPE);
+        query.size(size);
+        return query;
     };
 
-    this.sync = async() => {
+    this.sync = async () => {
         if (exists === undefined) {
             exists = await checkExists();
         }
@@ -198,7 +207,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
         }
     };
 
-    this.delete = async(id) => {
+    this.delete = async (id) => {
         let idStr;
         if (Object.prototype.toString.call(id).indexOf("Array") >= 0) {
             let bodies = id.map((item) => {
@@ -230,28 +239,31 @@ module.exports = function(name, opts, mappings = {}, settings) {
     };
 
     this.sort = (...args) => {
-        if (args.length === 1 && typeof args[0] === 'object') {
-            this.sortList.push(args[0]);
-        } else {
-            let [field, type, mode] = args;
-            if (typeof field !== 'string' || typeof type !== 'string') {
-                throw new Error('arguments type error');
-            }
-            type = type.toLowerCase();
-            if (type !== 'asc' && type !== 'desc') {
-                throw new Error('arguments type must be one of `asc` or `desc`');
-            }
-            let item = {
-                [field]: {
-                    'order': type
-                }
-            };
-            if (!!mode) {
-                item[field].mode = mode;
-            }
-            this.sortList.push(item);
-        }
-        return this;
+        let query = new Query(BASE_URL, INDEX, TYPE);
+        query.sort.apply(query, args);
+        return query;
+        // if (args.length === 1 && typeof args[0] === 'object') {
+        //     this.sortList.push(args[0]);
+        // } else {
+        //     let [field, type, mode] = args;
+        //     if (typeof field !== 'string' || typeof type !== 'string') {
+        //         throw new Error('arguments type error');
+        //     }
+        //     type = type.toLowerCase();
+        //     if (type !== 'asc' && type !== 'desc') {
+        //         throw new Error('arguments type must be one of `asc` or `desc`');
+        //     }
+        //     let item = {
+        //         [field]: {
+        //             'order': type
+        //         }
+        //     };
+        //     if (!!mode) {
+        //         item[field].mode = mode;
+        //     }
+        //     this.sortList.push(item);
+        // }
+        // return this;
     }
 
     const getJoinFlag = (data) => {
@@ -267,21 +279,22 @@ module.exports = function(name, opts, mappings = {}, settings) {
     this.checkIndexExists = checkIndexExists;
 
     this.source = (sources) => {
-        this.sourceList = sources;
-
-        return this;
+        let query = new Query(BASE_URL, INDEX, TYPE);
+        query.source(sources);
+        return query;
     };
 
     this.aggs = (aggs) => {
         if (!aggs instanceof Aggs) {
             throw new Error('arguments type error');
         }
-        this.aggsList.push(aggs);
-        return this;
+        let query = new Query(BASE_URL, INDEX, TYPE);
+        query.aggs(aggs);
+        return query;
     };
 
 
-    this.create = async(data, id = '', routing, options = {}) => {
+    this.create = async (data, id = '', routing, options = {}) => {
         if (exists === undefined) {
             exists = await checkExists();
         }
@@ -316,7 +329,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
         return body._id
     }
 
-    this.update = async(id, data, routing) => {
+    this.update = async (id, data, routing) => {
         if (exists === undefined) {
             exists = await checkExists();
         }
@@ -335,12 +348,8 @@ module.exports = function(name, opts, mappings = {}, settings) {
         return body;
     };
 
-    this.scroll = (options = {}) => {
-        this.scroll = options;
-        return this;
-    };
 
-    this.get = async(id) => {
+    this.get = async (id) => {
         const url = `${BASE_URL}${INDEX}/${TYPE}/${id}`;
         const body = await request({ url, 'method': 'GET' });
         const data = body._source;
@@ -351,7 +360,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
         }
     };
 
-    this.scroll = async(id, options = {}) => {
+    this.scroll = async (id, options = {}) => {
         if (!id) {
             throw new Error('id could not be blank');
         }
@@ -379,7 +388,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
     };
 
 
-    this.clearScroll = async(id) => {
+    this.clearScroll = async (id) => {
         if (!id) {
             throw new Error('id could not be blank');
         }
@@ -397,51 +406,13 @@ module.exports = function(name, opts, mappings = {}, settings) {
         return result;
     }
 
-    this.query = async(options = {}) => {
-        let obj = this.valueOf();
-        const body = {
-            'query': obj
-        };
-        if (this.offset !== undefined) {
-            body.from = this.offset;
-        }
-        if (this.limit !== undefined) {
-            body.size = this.limit;
-        }
-        if (this.sortList.length > 0) {
-            body.sort = this.sortList;
-        }
-        if (!!this.sourceList) {
-            body['_source'] = this.sourceList;
-        }
-        if (this.aggsList.length > 0) {
-            body.aggs = buildAggs();
-        }
-        if (options.slice) {
-            body.slice = options.slice;
-        }
-        const params = {};
-        if (options.scroll) {
-            params.scroll = options.scroll;
-        }
-        const url = urlBuilder.buildQueryUrl(params);
-        let result = await request({
-            url,
-            'body': JSON.stringify(body),
-            'method': 'POST',
-        });
-        let list = result.hits.hits.map((item) => {
-            item._source.id = item._id;
-            return item._source;
-        });
-        reset();
-        return {
-            list,
-            'orgResult': result
-        }
+    this.query = async (options = {}) => {
+        let query = new Query(BASE_URL, INDEX, TYPE);
+        let ret = await query.query(options);
+        return ret;
     };
 
-    const init = async() => {
+    const init = async () => {
         exists = await checkExists();
     };
     init();
