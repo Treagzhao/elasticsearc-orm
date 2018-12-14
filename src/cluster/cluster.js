@@ -46,4 +46,16 @@ module.exports = function(BASE_URL, config) {
         });
         return result;
     };
+    this.nodeStat = async (id) => {
+        let url = `${BASE_URL}_nodes`;
+        if (!!id) {
+            url += `/${id}`;
+        }
+        url += `/stats`;
+        const result = await request({
+            url,
+            'method': 'GET'
+        });
+        return result;
+    };
 };

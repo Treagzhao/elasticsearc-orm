@@ -91,4 +91,28 @@ describe('集群相关信息的测试脚本', function() {
             done(e);
         })
     });
+    it('集群的节点状态', function(done) {
+        (async () => {
+            const instance = await getInstance();
+            const nodeStat = await instance.nodeStat();
+            return nodeStat;
+        })().then((ret) => {
+            expect(ret).to.have.property('nodes');
+            done();
+        }).catch((e) => {
+            done(e);
+        })
+    });
+    it('集群中的某个节点状态', function(done) {
+        (async () => {
+            const instance = await getInstance();
+            const nodeStat = await instance.nodeStat('fShvPg4YR5uqx6gjqrkxHw');
+            return nodeStat;
+        })().then((ret) => {
+            expect(ret).to.have.property('nodes');
+            done();
+        }).catch((e) => {
+            done(e);
+        })
+    });
 });
