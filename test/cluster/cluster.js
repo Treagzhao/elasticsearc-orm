@@ -115,4 +115,16 @@ describe('集群相关信息的测试脚本', function() {
             done(e);
         })
     });
+    it('关停某个节点', function(done) {
+        (async () => {
+            const instance = await getInstance();
+            const result = await instance.shutDown('fShvPg4YR5uqx6gjqrkxHw');
+            return result;
+        })().then((ret) => {
+            expect(ret).to.have.property('nodes');
+            done();
+        }).catch((e) => {
+            done(e);
+        })
+    });
 });

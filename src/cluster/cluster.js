@@ -58,4 +58,16 @@ module.exports = function(BASE_URL, config) {
         });
         return result;
     };
+
+    this.shutDown = async (id) => {
+        if (!id) {
+            throw new Error("id could not be blank");
+        }
+        const url = `${BASE_URL}_cluster/nodes/${id}/_shutdown`;
+        const result = await request({
+            url,
+            'method': 'GET'
+        });
+        return result;
+    }
 };
