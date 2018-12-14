@@ -34,8 +34,8 @@ describe('连接相关测试', function() {
         });
         instance.on('connected', () => {
             let testType = instance.register('testType', {
-                'index': 'mocha_test',
-                'type': 'mocha_test'
+                'index': 'test',
+                'type': 'test_type2'
             }, {
                 'age': {
                     'type': 'integer'
@@ -50,7 +50,7 @@ describe('连接相关测试', function() {
                     'type': 'date'
                 }
             });
-            (async() => {
+            (async () => {
                 await testType.sync();
             })().then(() => {
                 done();
@@ -65,21 +65,22 @@ describe('连接相关测试', function() {
             'domain': config.host,
             'port': config.port
         });
-        let testType = instance.register('testType', {
-            'index': 'mocha_test',
-            'type': 'mocha_test'
-        }, {
-            'home': {
-                'type': "geo_point"
-            }
-        });
-        (async() => {
-            await testType.sync();
-        })().then(() => {
-            done();
-        }).catch((e) => {
-            done(e);
+        instance.on('connected', () => {
+            let testType = instance.register('testType', {
+                'index': 'mocha_test',
+                'type': 'mocha_test'
+            }, {
+                'home': {
+                    'type': "geo_point"
+                }
+            });
+            (async () => {
+                await testType.sync();
+            })().then(() => {
+                done();
+            }).catch((e) => {
+                done(e);
+            });
         });
     });
-
 });

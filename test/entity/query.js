@@ -10,8 +10,8 @@ const getEntity = () => {
         });
         instance.on('connected', () => {
             let testType = instance.register('testType', {
-                'index': 'mocha_test',
-                'type': 'mocha_test'
+                'index': 'test',
+                'type': 'test_type'
             }, {
                 'home': {
                     'type': "geo_point"

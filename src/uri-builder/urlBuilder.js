@@ -1,5 +1,4 @@
-const config = require('../../util/globalConfig.js');
-module.exports = function(BASE, INDEX, TYPE) {
+module.exports = function(BASE, INDEX, TYPE, config) {
 
     const getJoinFlag = (mappings) => {
         return Object.keys(mappings).some((key) => {

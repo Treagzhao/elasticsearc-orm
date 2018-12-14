@@ -47,7 +47,9 @@ describe('URL 构建器相关', function() {
 
 
     it('滚动逻辑', function() {
-        let builder = new UrlBuilder(BASE, INDEX, TYPE);
+        const config = new Map();
+        config.set('scroll', '1m');
+        let builder = new UrlBuilder(BASE, INDEX, TYPE, config);
         expect(builder.buildScrollUrl('id')).to.equal(BASE + '_search/scroll/id?scroll=1m');
         expect(builder.buildScrollUrl('id', {
             'scroll': '5m'

@@ -1,18 +1,18 @@
-const request = require('../util/request.js');
-const config = require('../util/globalConfig.js');
+const requestBuilder = require('../util/request.js');
 const UrlBuilder = require('./uri-builder/urlBuilder.js');
 const Condition = require('./esCondition.js'),
     Query = require('./esQuery.js'),
     Aggs = require('./esAggs.js');
-module.exports = function(name, opts, mappings = {}, settings) {
+module.exports = function(name, opts, mappings = {}, settings, config) {
     const self = this;
+    const request = requestBuilder(config);
     //Condition.call(this);
     const DOMAIN = config.get('domain'),
         PORT = config.get('port'),
         BASE_URL = config.get('BASE_URL'),
         INDEX = opts.index,
         TYPE = opts.type;
-    const urlBuilder = new UrlBuilder(BASE_URL, INDEX, TYPE);
+    const urlBuilder = new UrlBuilder(BASE_URL, INDEX, TYPE, config);
     let exists, dbMappings;
     let shardsCount;
     this.sortList = [];
@@ -20,7 +20,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
     this.sourceList = undefined;
     Object.keys(new Condition()).forEach((key) => {
         self[key] = (...args) => {
-            let query = new Query(BASE_URL, INDEX, TYPE);
+            let query = new Query(BASE_URL, INDEX, TYPE, config);
             query[key].apply(query, args);
             return query;
         };
@@ -180,7 +180,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
         if (isNaN(from)) {
             throw new Error('from parameter is invalid');
         }
-        let query = new Query(BASE_URL, INDEX, TYPE);
+        let query = new Query(BASE_URL, INDEX, TYPE, config);
         query.from(from);
         return query;
     };
@@ -188,7 +188,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
         if (isNaN(size)) {
             throw new Error('from parameter is invalid');
         }
-        let query = new Query(BASE_URL, INDEX, TYPE);
+        let query = new Query(BASE_URL, INDEX, TYPE, config);
         query.size(size);
         return query;
     };
@@ -239,7 +239,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
     };
 
     this.sort = (...args) => {
-        let query = new Query(BASE_URL, INDEX, TYPE);
+        let query = new Query(BASE_URL, INDEX, TYPE, config);
         query.sort.apply(query, args);
         return query;
         // if (args.length === 1 && typeof args[0] === 'object') {
@@ -279,7 +279,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
     this.checkIndexExists = checkIndexExists;
 
     this.source = (sources) => {
-        let query = new Query(BASE_URL, INDEX, TYPE);
+        let query = new Query(BASE_URL, INDEX, TYPE, config);
         query.source(sources);
         return query;
     };
@@ -288,7 +288,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
         if (!aggs instanceof Aggs) {
             throw new Error('arguments type error');
         }
-        let query = new Query(BASE_URL, INDEX, TYPE);
+        let query = new Query(BASE_URL, INDEX, TYPE, config);
         query.aggs(aggs);
         return query;
     };
@@ -407,7 +407,7 @@ module.exports = function(name, opts, mappings = {}, settings) {
     }
 
     this.query = async (options = {}) => {
-        let query = new Query(BASE_URL, INDEX, TYPE);
+        let query = new Query(BASE_URL, INDEX, TYPE, config);
         let ret = await query.query(options);
         return ret;
     };

@@ -1,6 +1,7 @@
 const EventEmitter = require('events').EventEmitter;
-const request = require('./util/request.js');
-const config = require('./util/globalConfig.js');
+const requestBuilder = require('./util/request.js');
+const configManager = require('./util/globalConfig.js');
+const Cluster = require('./src/cluster/cluster.js');
 const Entity = require('./src/entity.js');
 const Condition = require('./src/esCondition.js');
 const Aggs = require('./src/esAggs.js');
@@ -17,7 +18,9 @@ function Connection(opts) {
     const self = this;
     const entities = new Map();
     const BASE_URL = `http://${opts.domain}:${opts.port}/`;
-
+    const config = configManager();
+    Cluster.call(this, BASE_URL, config);
+    const request = requestBuilder(config);
     let testConnection = async () => {
         let body = await request({
             'url': BASE_URL,
@@ -30,14 +33,18 @@ function Connection(opts) {
         await testConnection();
     };
 
+
     this.register = (name, opts, mappings, settings) => {
+        if (!config.has('BASE_URL')) {
+            throw new Error("make sure instance has already connected");
+        }
         if (!opts.index) {
             throw new Error("index could not be blank");
         }
         if (!opts.type) {
             throw new Error('type could not be blank');
         }
-        entities.set(name, new Entity(name, opts, mappings, settings));
+        entities.set(name, new Entity(name, opts, mappings, settings, config));
         return entities.get(name);
     };
 

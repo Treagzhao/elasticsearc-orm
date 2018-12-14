@@ -1,9 +1,10 @@
-const request = require('../util/request.js');
+const requestBuilder = require('../util/request.js');
 const Condition = require('./esCondition.js'),
     Aggs = require('./esAggs.js');
 const UrlBuilder = require('./uri-builder/urlBuilder.js');
-module.exports = function(BASE_URL, INDEX, TYPE) {
-    const urlBuilder = new UrlBuilder(BASE_URL, INDEX, TYPE);
+module.exports = function(BASE_URL, INDEX, TYPE, config) {
+    const urlBuilder = new UrlBuilder(BASE_URL, INDEX, TYPE, config);
+    const request = requestBuilder(config);
     Condition.call(this);
     this.sortList = [];
     this.aggsList = [];
