@@ -80,4 +80,15 @@ describe('集群相关信息的测试脚本', function() {
             done(e);
         })
     });
+    it('集群的节点列表', function(done) {
+        (async () => {
+            const instance = await getInstance();
+            const nodes = await instance.nodes();
+            return nodes;
+        })().then((ret) => {
+            done();
+        }).catch((e) => {
+            done(e);
+        })
+    });
 });

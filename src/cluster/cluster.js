@@ -37,4 +37,13 @@ module.exports = function(BASE_URL, config) {
         });
         return result;
     }
+
+    this.nodes = async () => {
+        const url = `${BASE_URL}_nodes`;
+        const result = await request({
+            url,
+            'method': 'GET'
+        });
+        return result;
+    };
 };
