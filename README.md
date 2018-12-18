@@ -75,6 +75,52 @@
    await demoIndex.sync();
 ```
 
+### 索引健康值
+```js
+    const health = await demoIndex.health();
+```
+### 索引状态
+```js
+    const stat = await demoIndex.stat();
+```
+### 索引统计
+```js
+    const state = await demoIndex.state();
+```
+### 设置索引别名
+```js
+    const result = await demoIndex.alias(['alias_name']);
+```
+### 删除别名
+```js
+    const result = await demoIndex.removeAlias(['alias_name']);
+```
+### 刷新
+```js
+    const result = await demoIndex.refresh();
+```
+### 冲洗
+```js
+    const result = await demoIndex.flush();
+```
+### 强制合并
+```js
+    const result = await demoIndex.forceMerge();
+```
+### 测试分词器
+```js
+    const result = await demoIndex.analyze('我爱北京天安门','ik_max_word');
+```
+### 开启一个索引
+```js
+    const result = await demoIndex.open();
+```
+
+### 关闭一个索引
+```js
+    const result = await demoIndex.close();
+```
+
 ## 文档相关
 ### 创建文档
 create 方法返回一个 Promise 对象，可以使用 await 关键字，最终返回新建的文档 ID
