@@ -320,6 +320,36 @@ let ret = await demoIndex
 ```js
   instance.set('timeout',5000);
 ```
+## 集群相关接口
+### 获取集群健康值
+```js
+    const health = await instance.health();
+```
+### 获取集群状态
+```js
+    const state = await instance.state();
+```
+### 获取集群统计
+```js
+    const stat = await instance.stat();
+```
+### 获取索引列表
+```js
+    const result = await instance.indices();
+```
+### 节点信息
+```js
+    const result = await instance.nodes();
+```
+### 节点状态
+```js
+    const result = await instance.nodeStat('node_id');
+```
+### 关闭一个节点
+```js
+    const result = await instance.shutDown('node_id');
+```
+
 ## 查询API
 ### 文本匹配
 #### match 查询
