@@ -77,5 +77,6 @@ const ES = (opts) => {
 };
 ES.Aggs = Aggs;
 ES.Range = Range;
+ES.Entity = Entity;
 ES.Condition = Condition;
 module.exports = ES;
