@@ -86,4 +86,14 @@ module.exports = function(BASE_URL, config) {
         });
         return result;
     };
+
+
+    this.getMappings = async (index) => {
+        const url = `${BASE_URL}${index}/_mappings`;
+        const result = await request({
+            url,
+            'method': 'GET'
+        });
+        return result;
+    };
 };
