@@ -70,4 +70,20 @@ module.exports = function(BASE_URL, config) {
         });
         return result;
     }
+
+    this.createIndex = async (name, settings, alias) => {
+        const url = `${BASE_URL}${name}`;
+        const body = {
+            settings
+        };
+        if (alias) {
+            body.aliases = alias
+        }
+        let result = await request({
+            url,
+            'method': "PUT",
+            'body': JSON.stringify(body)
+        });
+        return result;
+    };
 };

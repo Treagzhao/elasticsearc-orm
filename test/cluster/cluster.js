@@ -115,13 +115,37 @@ describe('集群相关信息的测试脚本', function() {
             done(e);
         })
     });
-    it('关停某个节点', function(done) {
+    // it('关停某个节点', function(done) {
+    //     (async () => {
+    //         const instance = await getInstance();
+    //         const result = await instance.shutDown('fShvPg4YR5uqx6gjqrkxHw');
+    //         return result;
+    //     })().then((ret) => {
+    //         expect(ret).to.have.property('nodes');
+    //         done();
+    //     }).catch((e) => {
+    //         done(e);
+    //     })
+    // });
+    it('创建索引', function(done) {
         (async () => {
             const instance = await getInstance();
-            const result = await instance.shutDown('fShvPg4YR5uqx6gjqrkxHw');
+            const indexName = 'index_' + Math.random().toString(32).substr(2);
+            const result = await instance.createIndex(indexName, {
+                'number_of_shards': 10,
+                'number_of_replicas': 2,
+                'refresh_interval': '5m',
+                "analysis": {
+                    "analyzer": {
+                        "ik": {
+                            "tokenizer": "ik_max_word"
+                        }
+                    }
+                }
+            })
             return result;
         })().then((ret) => {
-            expect(ret).to.have.property('nodes');
+            expect(ret).to.have.property('acknowledged', true);
             done();
         }).catch((e) => {
             done(e);

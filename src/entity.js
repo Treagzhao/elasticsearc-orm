@@ -2,16 +2,19 @@ const requestBuilder = require('../util/request.js');
 const UrlBuilder = require('./uri-builder/urlBuilder.js');
 const Condition = require('./esCondition.js'),
     Query = require('./esQuery.js'),
+    Index = require('./index/index.js'),
     Aggs = require('./esAggs.js');
 module.exports = function(name, opts, mappings = {}, settings, config) {
     const self = this;
     const request = requestBuilder(config);
+
     //Condition.call(this);
     const DOMAIN = config.get('domain'),
         PORT = config.get('port'),
         BASE_URL = config.get('BASE_URL'),
         INDEX = opts.index,
         TYPE = opts.type;
+    Index.call(this, BASE_URL, INDEX, config);
     const urlBuilder = new UrlBuilder(BASE_URL, INDEX, TYPE, config);
     let exists, dbMappings;
     let shardsCount;
@@ -242,28 +245,6 @@ module.exports = function(name, opts, mappings = {}, settings, config) {
         let query = new Query(BASE_URL, INDEX, TYPE, config);
         query.sort.apply(query, args);
         return query;
-        // if (args.length === 1 && typeof args[0] === 'object') {
-        //     this.sortList.push(args[0]);
-        // } else {
-        //     let [field, type, mode] = args;
-        //     if (typeof field !== 'string' || typeof type !== 'string') {
-        //         throw new Error('arguments type error');
-        //     }
-        //     type = type.toLowerCase();
-        //     if (type !== 'asc' && type !== 'desc') {
-        //         throw new Error('arguments type must be one of `asc` or `desc`');
-        //     }
-        //     let item = {
-        //         [field]: {
-        //             'order': type
-        //         }
-        //     };
-        //     if (!!mode) {
-        //         item[field].mode = mode;
-        //     }
-        //     this.sortList.push(item);
-        // }
-        // return this;
     }
 
     const getJoinFlag = (data) => {
