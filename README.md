@@ -18,6 +18,7 @@
 - [使用聚合](#user-content-使用聚合)
 - [分页相关](#user-content-分页相关)
 - [设置](#user-content-设置)
+- [集群相关接口](#user-content-集群相关接口)
 - [查询API](#user-content-查询api)
 - [聚合API](#user-content-聚合api)
 
