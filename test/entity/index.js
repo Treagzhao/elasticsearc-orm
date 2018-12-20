@@ -192,4 +192,18 @@ describe('索引相关功能测试', function() {
     //         done(e);
     //     })
     // });
+
+
+    it('索引的分片信息', function(done) {
+        (async () => {
+            const entity = await getEntity();
+            const ret = await entity.shards();
+            return ret;
+        })().then((ret) => {
+            expect(ret).to.have.property('shards');
+            done();
+        }).catch((e) => {
+            done(e);
+        })
+    });
 });

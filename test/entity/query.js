@@ -11,7 +11,7 @@ const getEntity = () => {
         instance.on('connected', () => {
             let testType = instance.register('testType', {
                 'index': 'test',
-                'type': 'test_type'
+                'type': 'test_type2'
             }, {
                 'home': {
                     'type': "geo_point"

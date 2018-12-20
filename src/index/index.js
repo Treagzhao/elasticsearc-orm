@@ -153,4 +153,13 @@ module.exports = function(BASE_URL, INDEX, config) {
         });
         return body;
     };
+
+    this.shards = async () => {
+        const url = `${BASE_URL}${INDEX}/_segments`;
+        const body = await request({
+            url,
+            'method': 'GET'
+        });
+        return body.indices[INDEX];
+    };
 }
