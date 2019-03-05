@@ -53,7 +53,7 @@ module.exports = function(name) {
                 interval
             }
         };
-        let ordinary = ['format', 'time_zone', 'offset'];
+        let ordinary = ['format', 'time_zone', 'offset', 'min_doc_count', 'extended_bounds'];
         ordinary.forEach((key) => {
             if (options[key]) {
                 param.date_histogram[key] = options[key];
